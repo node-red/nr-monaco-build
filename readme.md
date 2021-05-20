@@ -46,7 +46,7 @@ cd output/monaco/dist/
 Check editor works in browser...
 
 ```bash
-npx http-server
+npm run demo
 ```
 
 Now go to
