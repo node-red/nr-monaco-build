@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="author" content="">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+  <p>Demonstrating monaco editor esm with i18n, cobalt theme and added types (node-red & nodejs) </p>
+  <p>Monaco lang should be french (right click inside the editor) </p>
+
+  <div id="monaco-editor" style="height: 500px;">MONACO</div>
+
+  <script src="./output/monaco/dist/locale/fr.js"></script>
+  <script src="./output/monaco/dist/editor.js" ></script>
+
+  <script>
+    var editor;
+    (function() {
+      var base = "./output/monaco/dist/";
+      var types = "./output/types/";
+      window.MonacoEnvironment = window.MonacoEnvironment || {};
+      window.MonacoEnvironment.getWorkerUrl = function (moduleId, label) {
+        if (label === 'json') return base + 'json.worker.js';
+        if (label === 'css') return base + 'worker.js';
+        if (label === 'html') return base + 'html.worker.js';
+        if (label === 'typescript' || label === 'javascript') return base + 'ts.worker.js';
+        return base + 'editor.worker.js';
+      }
+      
+      const defCode = `const fs = require("fs"); //<< should be of type fs & have intellisense
+const os = require("os"); //<< should be of type os & have intellisense
+const buf = Buffer.from([1,2,3]); //<< should be of type Buffer & have intellisense
+let m = RED.util.cloneMessage({}); //<< hover over cloneMessage - see rich tips
+`
+
+      const compilerOptions = {
+          allowJs: true,
+          checkJs: true,
+          allowNonTsExtensions: true,
+          target: monaco.languages.typescript.ScriptTarget.ESNext,
+          strictNullChecks: false,
+          strictPropertyInitialization: true,
+          strictFunctionTypes: true,
+          strictBindCallApply: true,
+          moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+          module: monaco.languages.typescript.ModuleKind.CommonJS,
+          typeRoots: ["types"],
+          lib: ["esnext"] //dont load DOM by default,
+      }
+      monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+
+      const diagnosticOptions = {
+          noSemanticValidation: false,
+          noSyntaxValidation: false,
+          diagnosticCodesToIgnore:  [
+              1108,  //return not inside function
+              //2304,  //Cannot find name - this one is heavy handed and prevents user seeing stupid errors. Would provide better ACE feature parity (i.e. no need for declaration of vars) but misses lots of errors. Lets be bold & leave it out!
+              2307,  //Cannot find module 'xxx' or its corresponding type declarations
+              2322,  //Type 'unknown' is not assignable to type 'string'
+              2339,  //property does not exist on
+              7043,  //i forget what this one is,
+              80001, //Convert to ES6 module
+              80004, //JSDoc types may be moved to TypeScript types.
+          ]
+      };
+      monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(diagnosticOptions);
+
+      editor = monaco.editor.create(document.getElementById("monaco-editor"), {
+        value: defCode,
+        language: "javascript"
+      });
+      var themeName = "cobalt"
+      fetch(base + "theme/" + themeName + ".json").then(response => {
+        return response.json();
+      }).then(theme => {
+        if ((theme.rules && Array.isArray(theme.rules)) || theme.colors) {
+          monaco.editor.defineTheme(themeName, theme);
+          monaco.editor.setTheme(themeName);
+        } else {
+          console.warn("theme is not valid")
+        }
+      }).catch(err => {
+        console.error(err);
+      });
+      const urls = [
+        types + "node-red/util.d.ts",
+        types + "node/globals.d.ts",
+        types + "node/fs.d.ts",
+        types + "node/os.d.ts",
+      ]
+      var promises = urls.map(url => fetch(url).then(y => y.text()));
+      Promise.all(promises).then(results => {
+        console.log(results);
+        for (let index = 0; index < results.length; index++) {
+          const ts = results[index];
+          const fn = urls[index].replace(types,"");
+          monaco.languages.typescript.javascriptDefaults.addExtraLib(ts, `file://types/${fn}`);
+        }
+      });
+    })();
+
+  </script>
+
+</body>
+
+</html>

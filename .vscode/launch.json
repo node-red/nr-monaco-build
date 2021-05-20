@@ -1,0 +1,13 @@
+{
+    "configurations": [
+    {
+        "name": "Launch current file",
+        "program": "${workspaceFolder}/${file}",
+        "request": "launch",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "pwa-node"
+    }
+    ]
+}
