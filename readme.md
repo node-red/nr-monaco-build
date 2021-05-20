@@ -1,9 +1,9 @@
-# about 
+# About 
 This project makes an ESM bundle of monaco-editor with 50 themes and localization support. It was built for use in node-red.
 
-## credits
-Huge credit to [primefaces-monaco](https://github.com/blutorange/primefaces-monaco). Without their work, I would never have gotten i18n working.
-All credits to https://www.npmjs.com/package/monaco-themes for the themes
+## Credits
+* Huge credit to [primefaces-monaco](https://github.com/blutorange/primefaces-monaco). Without their work, I would never have gotten i18n working.
+* All credits to https://www.npmjs.com/package/monaco-themes for the themes
 
 
 ## Notes
@@ -61,6 +61,5 @@ and you should see monaco editor with the cobalt theme and French menus (try ope
     cp -r output/monaco/dist \
         <node-red-source-directory>/packages/node_modules/@node-red/editor-client/src/vendor/monaco/
 
-    cd /tmp/monaco-editor-esm-i18n
     cp -r output/types \
         <node-red-source-directory>/packages/node_modules/@node-red/editor-client/src/
