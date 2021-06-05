@@ -1,5 +1,11 @@
-# About 
-This project makes an ESM bundle of monaco-editor with 50 themes and localization support. It was built for use in node-red.
+<br>
+
+***IMPORTANT NOTE: This project is specifically for building monaco for node-red and will likely not be of much use to any other projects***
+
+<br>
+
+## About 
+This project makes an ESM bundle of monaco-editor with 50 themes and localization support. It was built specifically for use in node-red.
 
 ## Credits
 * Huge credit to [primefaces-monaco](https://github.com/blutorange/primefaces-monaco). Without their work, I would never have gotten i18n working.
@@ -55,7 +61,7 @@ Now go to
 http://localhost:8080/demo.html
 ```
 
-and you should see monaco editor with the cobalt theme and French menus (try opening the context menu with a right click)
+and you should see monaco editor with the monokai theme and French menus (try opening the context menu with a right click)
 
 ### Add to node-red src
     cp -r output/monaco/dist \
