@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf')
 const {exec} = require('child_process');
-const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-node-types\` */\n\n`;
+const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/Steve-Mcl/monaco-editor-esm-i18n */\n\n`;
 const excludeLibs = ["base.d.ts","constants.d.ts","index.d.ts","inspector.d.ts","punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
 const { createMinifier } = require("dts-minify");
 

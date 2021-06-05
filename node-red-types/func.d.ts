@@ -3,13 +3,13 @@ interface NodeMessage {
     topic?: string;
     payload?: any;
     _msgid?: string;
-    [other: any]: any; //permit other properties
+    [other: string]: any; //permit other properties
 }
 
 /** @type {NodeMessage} the `msg` object */
-var msg: NodeMessage;
+declare var msg: NodeMessage;
 /** @type {string} the id of the incoming `msg` (alias of msg._msgid) */
-const __msgid__:string;
+declare const __msgid__:string;
 
 /**
  * @typedef NodeStatus
@@ -46,11 +46,11 @@ declare class node {
     * ``` 
     * @see node-red documentation [writing-functions: sending messages asynchronously](https://nodered.org/docs/user-guide/writing-functions#sending-messages-asynchronously) 
     */ 
-    static send(msg:object, clone:Boolean=true);
+    static send(msg:object, clone?:Boolean);
     /** Inform runtime this instance has completed its operation */
     static done();
     /** Send an error to the console and debug side bar. Include `msg` in the 2nd parameter to trigger the catch node.  */
-    static error(err:string|Error, msg:object=null);
+    static error(err:string|Error, msg?:object);
     /** Log a warn message to the console and debug sidebar */
     static warn(warning:string|Object);
     /** Log an info message to the console (not sent to sidebar)' */
@@ -77,25 +77,29 @@ declare class node {
 }
 declare class context {
     /** Get a value from context */
-    static get(name:string, store:string="default");
+    static get(name:string, store?:string);
     /** Store a value in context */
-    static set(name:string, value:Any, store:string="default");
+    static set(name:string, value:any, store?:string);
     /** Get an array of the keys in the context store */
-    static keys(store:string="default"):Array ;
+    static keys(store?:string):Array<string> ;
 }
 declare class flow {
     /** Get a value from flow context */
-    static get(name:string, store:string="default");
+    static get(name:string, store?:string);
     /** Store a value in flow context */
-    static set(name:string, value:Any, store:string="default");
+    static set(name:string, value:any, store?:string);
     /** Get an array of the keys in the flow context store */
-    static keys(store:string="default"):Array ;
+    static keys(store?:string):Array<string> ;
 }
 declare class global {
     /** Get a value from global context */
-    static get(name:string, store:string="default");
+    static get(name:string, store?:string);
     /** Store a value in global context */
-    static set(name:string, value:Any, store:string="default");
+    static set(name:string, value:any, store?:string);
     /** Get an array of the keys in the global context store */
-    static keys(store:string="default"):Array ;
+    static keys(store?:string):Array<string> ;
+}
+declare class env {
+    /** Get an environment variable value */
+    static get(name:string);
 }

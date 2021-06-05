@@ -1,12 +1,13 @@
 {
   "name": "monaco-editor-esm-i18n",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A wrapper to generate an es5 monaco editor with i18n, specifically developed for node-red",
   "main": "index.js",
   "scripts": {
-    "build": "npm run update-types && npm run generate && npm run pack",
+    "build": "npm run update-types && npm run generate && npm run generate-themes && npm run pack",
     "clean": "rm -r -f output && rm -r -f temp",
     "generate": "node generate-monaco-esm-i18n.js",
+    "generate-themes": "node generate-themes.js",
     "update-types": "node update-types.js",
     "pack": "npx webpack",
     "demo": "npx http-server",
@@ -19,7 +20,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.14.45",
+    "@types/node": "^15.12.1",
     "copy-webpack-plugin": "^8.1.1",
     "css-loader": "^5.2.4",
     "dts-minify": "^0.2.3",

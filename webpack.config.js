@@ -54,10 +54,9 @@ module.exports = (env, argv) => {
       }),
       new CopyWebpackPlugin({
         patterns: [
-            { from: 'node_modules/monaco-themes/themes', to: "theme"},
-            { from: 'node_modules/monaco-themes/LICENSE', to: "theme"},
-            { from: 'node_modules/monaco-editor-esm-i18n/ThirdPartyNotices.txt', to: "ThirdPartyNotices.txt"},
-            { from: 'node_modules/monaco-editor-esm-i18n/LICENSE', to: "LICENSE", toType: "file"}
+          { from: 'node_modules/monaco-themes/LICENSE', to: "theme"},
+          { from: 'node_modules/monaco-editor-esm-i18n/ThirdPartyNotices.txt', to: "ThirdPartyNotices.txt"},
+          { from: 'node_modules/monaco-editor-esm-i18n/LICENSE', to: "LICENSE", toType: "file"}
         ]
     })
     ],

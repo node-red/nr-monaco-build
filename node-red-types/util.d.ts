@@ -22,7 +22,7 @@ declare namespace RED {
     /**
      * Utility functions for the node-red function sandbox
      */
-    declare namespace util {
+    namespace util {
 
         /**
          * Encode an object to JSON without losing information about non-JSON types
