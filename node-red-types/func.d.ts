@@ -76,6 +76,7 @@ declare class flow {
     /** Get an array of the keys in the flow context store */
     static keys(store?:string):Array<string> ;
 }
+//@ts-ignore
 declare class global {
     /** Get a value from global context */
     static get(name:string, store?:string);
