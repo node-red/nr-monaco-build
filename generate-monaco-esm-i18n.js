@@ -6,6 +6,22 @@ const mkdirp = require("mkdirp");
 const replaceInFile = require("replace-in-file");
 const ncp = require("ncp").ncp;
 const rimraf = require("rimraf");
+const readJson = require('read-package-json')
+const { semver, mkDirSafe } = require("./common");
+const { tempDir } = require("./paths")
+
+
+function readPackage(packageFile) {
+    return new Promise(function(resolve, reject) {
+        readJson(packageFile, console.error, false, (err,data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data)
+            }
+        });
+    });
+}
 
 const {
     monacoDir,
@@ -168,12 +184,40 @@ function createScript(lang, locale) {
     return "this.MonacoEnvironment = this.MonacoEnvironment || {}; this.MonacoEnvironment.Locale = {language: '" + lang + "', data: " + JSON.stringify(sortedLocale, null, 4) + "};";
 }
 
-function main() {
+async function main() {
+    const pkg = await readPackage("package.json");
+    const monacoVersion = pkg.devDependencies["monaco-editor"];
+    const monacoSemver = semver(monacoVersion);
+    const esm = `import * as monaco from "monaco-editor-esm-i18n";
+
+if(monaco && monaco.monaco) {
+    monaco = monaco.monaco;
+}
+
+if(typeof window!="undefined") {
+    if(!window.monaco) window.monaco = monaco
+} 
+
+if(typeof self!="undefined") {
+    if(!self.monaco) self.monaco = monaco
+}
+
+monaco.version = "${monacoSemver.toString()}";
+
+export {
+    monaco
+};
+`
+    //mkDirSafe(tempDir);
+    mkdirp.sync(tempDir);
+    var fn = path.join(tempDir, "monaco-editor-esm-i18n.js");
+    fs.writeFileSync(fn, esm);
     mkdirp.sync(gitDir);
     injectSourcePath(err => {
         if (err) throw err;
         gitPullOrClone(vsCodeRepository, vsCodeLocDir, function (err) {
             if (err) throw err;
+            
             fs.readdir(vsCodeLocI18nDir, (err, langDirs) => {
                 if (err) throw err;
                 langDirs.forEach(langDir => {

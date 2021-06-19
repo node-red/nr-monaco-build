@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
     mode: env.production ? "production" : "development",
     devtool: env.production ? undefined : "inline-source-map",
     entry: {
-      "editor": "./monaco-editor-esm-i18n.js",
+      "editor": "./temp/monaco-editor-esm-i18n.js",
       "editor.worker": "monaco-editor-esm-i18n/esm/vs/editor/editor.worker.js",
       "json.worker": "monaco-editor-esm-i18n/esm/vs/language/json/json.worker",
       "css.worker": "monaco-editor-esm-i18n/esm/vs/language/css/css.worker",

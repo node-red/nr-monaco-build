@@ -26,8 +26,8 @@ cd monaco-editor-esm-i18n
 ### Prepare
 
 #### Firstly
-* Check & update `package.json` for latest version of `monaco-editor` (check [here](https://www.npmjs.com/package/monaco-editor))
-* Update the line `monaco.version = "x.y.z";` in `monaco-editor-esm-i18n.js` to match npm version (This is used in `node-red` for reporting the editor version)
+* Check & update `package.json` for latest version of `monaco-editor` (check [here](https://www.npmjs.com/package/monaco-editor)) and other dev dependencies
+* ~~Update the line `monaco.version = "x.y.z";` in `monaco-editor-esm-i18n.js` to match npm version (This is used in `node-red` for reporting the editor version)~~ This is now done automatically
 
 #### Check + update node-red (function node/server-side) type defs
 * `node-red-types/func.d.ts`
