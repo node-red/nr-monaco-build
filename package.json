@@ -1,6 +1,6 @@
 {
   "name": "monaco-editor-esm-i18n",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A wrapper to generate an es5 monaco editor with i18n, specifically developed for node-red",
   "main": "index.js",
   "scripts": {
