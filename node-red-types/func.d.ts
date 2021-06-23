@@ -1,7 +1,4 @@
 
-/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/Steve-Mcl/monaco-editor-esm-i18n */
-
-
 interface NodeMessage {
     topic?: string;
     payload?: any;
@@ -104,7 +101,7 @@ declare class context {
      */
     static set(name: string | string[], value?: any | any[], callback?: Function);
     /**
-     * Set one or multiple values in context (asynchronous).
+     * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
      * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
      * @param store - (optional) Name of context store
@@ -119,13 +116,13 @@ declare class context {
      */
     static set(name: string | string[], value?: any | any[], store?: string, callback?: Function);
 
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(): Array<string>;
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(store: string): Array<string>;
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(callback: Function);
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(store: string, callback: Function);
 }
 declare class flow {
@@ -169,7 +166,7 @@ declare class flow {
      */
     static set(name: string | string[], value?: any | any[], callback?: Function);
     /**
-     * Set one or multiple values in context (asynchronous).
+     * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
      * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
      * @param store - (optional) Name of context store
@@ -184,13 +181,13 @@ declare class flow {
      */
     static set(name: string | string[], value?: any | any[], store?: string, callback?: Function);
 
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(): Array<string>;
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(store: string): Array<string>;
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(callback: Function);
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(store: string, callback: Function);
 }
 
@@ -236,7 +233,7 @@ declare class global {
      */
     static set(name: string | string[], value?: any | any[], callback?: Function);
     /**
-     * Set one or multiple values in context (asynchronous).
+     * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
      * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
      * @param store - (optional) Name of context store
@@ -251,16 +248,16 @@ declare class global {
      */
     static set(name: string | string[], value?: any | any[], store?: string, callback?: Function);
  
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(): Array<string>;
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(store: string): Array<string>;
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(callback: Function);
-    /** Get an array of the keys in the global context store */
+    /** Get an array of the keys in the context store */
     static keys(store: string, callback: Function);
 }
 declare class env {
     /** Get an environment variable value */
-static get(name:string);
+    static get(name:string);
 }
