@@ -6,9 +6,13 @@ function findClosestSemverMatch(semverString, semverStringArray) {
 	if (!semverStringArray.length) {
 	  return null
 	}
-  
-	const semvers = semverStringArray.map(e => semver(e));
-	semvers.sort(function(a, b){
+	let semversArray = semverStringArray.map(e => semver(e));
+	const semverB = semver(semverString);
+	const semversSameMajor = semversArray.filter(e => e.major == semverB.major);
+	if(semversSameMajor && semversSameMajor.length) {
+		semversArray = semversSameMajor;
+	}
+	semversArray.sort(function(a, b){
 		if(a.major < b.major) return -1;
 		else if(a.major > b.major) return 1;
 		else {
@@ -21,18 +25,29 @@ function findClosestSemverMatch(semverString, semverStringArray) {
 		}
 	  });
 
-	const semverB = semver(semverString)
-	const offsets = semvers.map(semverA => {
-	  return Math.abs(
-		(semverA.major * 100 + semverA.minor * 10 + semverA.patch) -
-		(semverB.major * 100 + semverB.minor * 10 + semverB.patch)
-	  )
-	})
-  
-	const minOffset = Math.min.apply(null, offsets)
-	const pos = offsets.indexOf(minOffset);
-	const closest = semvers[pos];
-	return closest.toString();
+	let below, above, best;
+	for (let index = 0; index < semversArray.length; index++) {
+		const element = semversArray[index];
+		if(element.major == semverB.major && element.minor == semverB.minor && element.patch == semverB.patch) {
+			best = element;
+			break;
+		}
+		if(element.major <= semverB.major && element.minor <= semverB.minor && element.patch < semverB.patch) {
+			below = element;
+		}
+		if(element.major >= semverB.major && element.minor >= semverB.minor && element.patch > semverB.patch) {
+			above = element;
+			break;
+		}
+	}
+	if(!best) {
+		best = above ? above : below;
+	}
+	if(!best) {
+		return null;
+	}
+
+	return best.toString();
 }
 
 function semver(/** @type {string} */ ver) {
