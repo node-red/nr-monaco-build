@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf')
 const {exec} = require('child_process');
-const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/Steve-Mcl/monaco-editor-esm-i18n */\n\n`;
+const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/node-red/nr-monaco-build */\n\n`;
 const excludeLibs = ["base.d.ts","constants.d.ts","index.d.ts","inspector.d.ts","punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
 const { createMinifier } = require("dts-minify");
 const { findClosestSemverMatch, deleteFileOrDir, mkDirSafe} = require("./common");
@@ -51,7 +51,7 @@ const {
 			importLibs(NODE_LIB_SOURCE, NODE_LIB_DESTINATION);
 			copyFiles(NODE_RED_LIB_SOURCE, NODE_RED_LIB_DESTINATION);
 		});
-	});	
+	});
 })();
 
 
@@ -88,7 +88,7 @@ function copyFiles(src, dst) {
 				} else {
 					fs.writeFileSync(path.join(dst, name), output );
 				}
-				
+
 			}
 		}
 	}
@@ -99,6 +99,6 @@ function copyFiles(src, dst) {
 			var srcDir = path.join(src, p);
 			var dstDir = path.join(dst, p);
 			copyFiles(srcDir, dstDir);
-		} 
+		}
 	}
 }
