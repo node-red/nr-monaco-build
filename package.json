@@ -31,7 +31,7 @@
         "insane": "^2.6.2",
         "mkdirp": "^1.0.4",
         "monaco-editor": "0.28.1",
-        "monaco-themes": "^0.3.3",
+        "monaco-themes": "^0.4.0",
         "ncp": "^2.0.0",
         "read-package-json": "^3.0.1",
         "recursive-readdir": "^2.2.2",
