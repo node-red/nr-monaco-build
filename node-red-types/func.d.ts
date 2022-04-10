@@ -1,4 +1,3 @@
-
 interface NodeMessage {
     topic?: string;
     payload?: any;
@@ -28,12 +27,12 @@ interface NodeStatus {
 }
 
 declare class node {
-    /** 
-    * Send 1 or more messages asynchronously 
-    * @param {object | object[]} msg  The msg object 
-    * @param {Boolean} [clone=true]  Flag to indicate the `msg` should be cloned. Default = `true`   
-    * @see node-red documentation [writing-functions: sending messages asynchronously](https://nodered.org/docs/user-guide/writing-functions#sending-messages-asynchronously) 
-    */ 
+    /**
+    * Send 1 or more messages asynchronously
+    * @param {object | object[]} msg  The msg object
+    * @param {Boolean} [clone=true]  Flag to indicate the `msg` should be cloned. Default = `true`
+    * @see node-red documentation [writing-functions: sending messages asynchronously](https://nodered.org/docs/user-guide/writing-functions#sending-messages-asynchronously)
+    */
     static send(msg:object|object[], clone?:Boolean): void;
     /** Inform runtime this instance has completed its operation */
     static done();
@@ -54,11 +53,13 @@ declare class node {
     */
     static status(status:string|boolean|number);
     /** the id of this node */
-    public readonly id:string;
+    public static readonly id:string;
     /** the name of this node */
-    public readonly name:string;
+    public static readonly name:string;
+    /** the path identifier for this node */
+    public static readonly path:string;
     /** the number of outputs of this node */
-    public readonly outputCount:number;
+    public static readonly outputCount:number;
 }
 declare class context {
     /**
@@ -90,27 +91,27 @@ declare class context {
     /**
      * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      */
     static set(name: string | string[], value?: any | any[]);
     /**
      * Set one or multiple values in context (asynchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param callback - (optional) Callback function (`(err) => {}`)
      */
     static set(name: string | string[], value?: any | any[], callback?: Function);
     /**
      * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param store - (optional) Name of context store
      */
     static set(name: string | string[], value?: any | any[], store?: string);
     /**
      * Set one or multiple values in context (asynchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param store - (optional) Name of context store
      * @param callback - (optional) Callback function (`(err) => {}`)
      */
@@ -155,27 +156,27 @@ declare class flow {
     /**
      * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      */
     static set(name: string | string[], value?: any | any[]);
     /**
      * Set one or multiple values in context (asynchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param callback - (optional) Callback function (`(err) => {}`)
      */
     static set(name: string | string[], value?: any | any[], callback?: Function);
     /**
      * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param store - (optional) Name of context store
      */
     static set(name: string | string[], value?: any | any[], store?: string);
     /**
      * Set one or multiple values in context (asynchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param store - (optional) Name of context store
      * @param callback - (optional) Callback function (`(err) => {}`)
      */
@@ -222,32 +223,32 @@ declare class global {
     /**
      * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      */
     static set(name: string | string[], value?: any | any[]);
     /**
      * Set one or multiple values in context (asynchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param callback - (optional) Callback function (`(err) => {}`)
      */
     static set(name: string | string[], value?: any | any[], callback?: Function);
     /**
      * Set one or multiple values in context (synchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param store - (optional) Name of context store
      */
     static set(name: string | string[], value?: any | any[], store?: string);
     /**
      * Set one or multiple values in context (asynchronous).
      * @param name - Name (or array of names) to set in context
-     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed. 
+     * @param value - The value (or array of values) to store in context. If the value(s) are null/undefined, the context item(s) will be removed.
      * @param store - (optional) Name of context store
      * @param callback - (optional) Callback function (`(err) => {}`)
      */
     static set(name: string | string[], value?: any | any[], store?: string, callback?: Function);
- 
+
     /** Get an array of the keys in the context store */
     static keys(): Array<string>;
     /** Get an array of the keys in the context store */
@@ -258,6 +259,20 @@ declare class global {
     static keys(store: string, callback: Function);
 }
 declare class env {
-    /** Get an environment variable value */
-    static get(name:string);
+    /** 
+     * Get an environment variable value  
+     * 
+     * Predefined node-red variables...  
+     *   * `NR_NODE_ID` - the ID of the node
+     *   * `NR_NODE_NAME` - the Name of the node
+     *   * `NR_NODE_PATH` - the Path of the node
+     *   * `NR_GROUP_ID` - the ID of the containing group
+     *   * `NR_GROUP_NAME` - the Name of the containing group
+     *   * `NR_FLOW_ID` - the ID of the flow the node is on
+     *   * `NR_FLOW_NAME` - the Name of the flow the node is on
+     * @param name Name of the environment variable to get
+     * @example 
+     * ```const flowName = env.get("NR_FLOW_NAME");```
+     */
+    static get(name:string) :string;
 }
