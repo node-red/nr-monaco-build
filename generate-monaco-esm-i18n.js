@@ -7,21 +7,7 @@ const replaceInFile = require("replace-in-file");
 const ncp = require("ncp").ncp;
 const rimraf = require("rimraf");
 const readJson = require('read-package-json')
-const { semver, mkDirSafe } = require("./common");
-const { tempDir } = require("./paths")
-
-
-function readPackage(packageFile) {
-    return new Promise(function(resolve, reject) {
-        readJson(packageFile, console.error, false, (err,data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data)
-            }
-        });
-    });
-}
+const { semver } = require("./common");
 
 const {
     monacoDir,
@@ -34,9 +20,20 @@ const {
 } = require("./paths");
 
 const langDirPrefix = "vscode-language-pack-";
-const vsCodeRepository = "git://github.com/Microsoft/vscode-loc.git";
-
+const vsCodeRepository = "https://github.com/Microsoft/vscode-loc.git";
 const fileExistsCache = new Map();
+
+function readPackage(packageFile) {
+    return new Promise(function (resolve, reject) {
+        readJson(packageFile, console.error, false, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data)
+            }
+        });
+    });
+}
 
 /**
  * The microsoft/vscode-loc contains many more i18n keys that are used by monaco editor.
@@ -61,14 +58,14 @@ function sourceFileExists(key) {
  * then i18n key. So we modify the each call to `localize` so that it includes
  * the source file name.
  *
- * > nls.localize("my.key", args)
+ * > nls.localize(key, args)
  *
  * becomes
  *
- * > nls.localize("source/file.js", "my.key", args)
+ * > nls.localize("source/file.js", key, args)
  * @param callback
  */
-function injectSourcePath(callback) {
+function injectSourcePath(monacoVersion, callback) {
     rimraf(monacoModDir, function (err) {
         if (err) {
             callback(err);
@@ -88,26 +85,46 @@ function injectSourcePath(callback) {
                     if (file.endsWith(".js")) {
                         const vsPath = path.relative(monacoModEsmDir, path.dirname(file)).replace(/\\/g, "/");
                         const transPath = vsPath + "/" + path.basename(file, ".js");
+                        //1a. Find       localize(   : localize(   localize2(   .localize2(   etc (but NOT   function localize()  )
+                        //1b. Change to  localize("path/to/translation/item", xxxx
+                        //2a. Find       localize.apply(
+                        //2b. Change to  localize.apply("path/to/translation/item", xxxxx
                         replaceInFile({
                             files: file,
                             from: [
-                                /localize\(/g,
-                                /localize\.apply\(\s*([^,]+)\s*,\s*\[/g,
+                                /(?<!function )(localize\d*?\s*?\()/g, //match:-   .localize(   : localize(   localize2(   .localize2(   etc
+                                /(localize\d*?\.apply)\(\s*([^,]+)\s*,\s*\[/g,
                             ],
                             to: [
-                                `localize('${transPath}', `,
-                                `localize.apply($1, ['${transPath}', `,
+                                `$1 '${transPath}', `,
+                                `$1($2, ['${transPath}', `,
                             ],
                         });
-                        if(file.endsWith("services\\htmlLinks.js")) {
-                            //workaround a bug i cant understand - findDocumentLinks is called with null document & an exception occurs
+                        if (file.endsWith("iconLabels.js")) {
+                            //if a translation is missing, prevent error in  `stripIcons`  (ensures command palette is populated)
                             replaceInFile({
                                 files: file,
                                 from: [
-                                    /(export.*?function.*?findDocumentLinks.*?{)/g
+                                    /stripIcons\(text\)\s?{/g
                                 ],
                                 to: [
-                                    `$1\n    if(!document) return [];`
+                                    `stripIcons(text) {\n  text = text || "";`
+                                ],
+                            });
+                        } else if (file.search(/[\\|\/]editor[\\|\/]editor.api.js$/) > -1) {
+                            //insert version: 
+                            //1. Find      const api = createMonacoBaseAPI();
+                            //2. Insert    Object.defineProperty(api, 'version', {get: function() { return 'x.y.z' }});
+                            //             export const version = api.version;
+                            replaceInFile({
+                                files: file,
+                                from: [
+                                    /(const\s+?)(\w*?)(\s+?=\s+?createMonacoBaseAPI\(\).*$)/gm
+                                ],
+                                to: [
+                                    `$1$2$3` +
+                                    `\nObject.defineProperty($2, 'version', {get: function() { return '${monacoVersion}' }});` +
+                                    `\nexport const version = $2.version;`
                                 ],
                             });
                         }
@@ -180,44 +197,27 @@ function createScript(lang, locale) {
     const sortedLocale = {};
     for (const key of sortedKeys) {
         sortedLocale[key] = locale[key];
+        // sortedLocale[safeKey(key)] = locale[key];
     }
-    return "this.MonacoEnvironment = this.MonacoEnvironment || {}; this.MonacoEnvironment.Locale = {language: '" + lang + "', data: " + JSON.stringify(sortedLocale, null, 4) + "};";
+    return `window.MonacoEnvironment = window.MonacoEnvironment || {};
+window.MonacoEnvironment.Locale = window.MonacoLocale = {
+  language: '${lang}',
+  data: ${JSON.stringify(sortedLocale, null, 2)} 
+};`;
 }
 
 async function main() {
     const pkg = await readPackage("package.json");
-    const monacoVersion = pkg.devDependencies["monaco-editor"];
-    const monacoSemver = semver(monacoVersion);
-    const esm = `import * as monaco from "monaco-editor-esm-i18n";
+    const monacoDep = pkg.devDependencies["monaco-editor"];
+    const monacoSemver = semver(monacoDep);
+    const monacoVersion = monacoSemver.toString();
 
-if(monaco && monaco.monaco) {
-    monaco = monaco.monaco;
-}
-
-if(typeof window!="undefined") {
-    if(!window.monaco) window.monaco = monaco
-} 
-
-if(typeof self!="undefined") {
-    if(!self.monaco) self.monaco = monaco
-}
-
-monaco.version = "${monacoSemver.toString()}";
-
-export {
-    monaco
-};
-`
-    //mkDirSafe(tempDir);
-    mkdirp.sync(tempDir);
-    var fn = path.join(tempDir, "monaco-editor-esm-i18n.js");
-    fs.writeFileSync(fn, esm);
     mkdirp.sync(gitDir);
-    injectSourcePath(err => {
+    injectSourcePath(monacoVersion, err => {
         if (err) throw err;
         gitPullOrClone(vsCodeRepository, vsCodeLocDir, function (err) {
             if (err) throw err;
-            
+
             fs.readdir(vsCodeLocI18nDir, (err, langDirs) => {
                 if (err) throw err;
                 langDirs.forEach(langDir => {

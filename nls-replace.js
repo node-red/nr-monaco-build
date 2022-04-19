@@ -4,13 +4,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 function _format(message, args) {
-    var result;
+    let result;
     if (args.length === 0) {
         result = message;
     }
     else {
-        result = String(message).replace(/\{(\d+)\}/g, function (match, rest) {
-            var index = rest[0];
+        result = message.replace(/\{(\d+)\}/g, function (match, rest) {
+            const index = rest[0];
             return typeof args[index] !== 'undefined' ? args[index] : match;
         });
     }
@@ -18,20 +18,21 @@ function _format(message, args) {
 }
 
 export function localize(path, data, defaultMessage) {
-    var key = typeof data=== "object" ? data.key : data;
-    var data = ((global.MonacoEnvironment||{}).Locale||{}).data||{};
-    var message = (data[path]||{})[key];
+    const key = typeof data === "object" ? data.key : data;
+    const localeData = ((window.MonacoLocale || {}) || {}).data || {};
+    let message = (localeData[path] || {})[key];
     if (!message) {
         message = defaultMessage;
     }
-    var args = [];
-    for (var _i = 3; _i < arguments.length; _i++) {
+    const args = [];
+    for (let _i = 3; _i < arguments.length; _i++) {
         args[_i - 3] = arguments[_i];
     }
     return _format(message, args);
 }
 
 export function loadMessageBundle(file) {
+    console.log("NEW loadMessageBundle called : " + file);
     return localize;
 }
 
