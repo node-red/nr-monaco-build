@@ -35,7 +35,7 @@ cd nr-monaco-build
 ### Build
 
 ```bash
-npm install
+npm install --include=dev
 npm run clean
 npm run build
 ```

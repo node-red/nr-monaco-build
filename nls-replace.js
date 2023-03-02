@@ -19,7 +19,7 @@ function _format(message, args) {
 
 export function localize(path, data, defaultMessage) {
     const key = typeof data === "object" ? data.key : data;
-    const localeData = ((window.MonacoLocale || {}) || {}).data || {};
+    const localeData = ((self.MonacoLocale || {}) || {}).data || {};
     let message = (localeData[path] || {})[key];
     if (!message) {
         message = defaultMessage;
@@ -32,10 +32,13 @@ export function localize(path, data, defaultMessage) {
 }
 
 export function loadMessageBundle(file) {
-    console.log("NEW loadMessageBundle called : " + file);
     return localize;
 }
 
 export function config(opt) {
     return loadMessageBundle;
+}
+
+export function getConfiguredDefaultLocale() {
+    return (self.MonacoLocale || {}).language;
 }

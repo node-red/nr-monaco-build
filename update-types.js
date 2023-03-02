@@ -3,7 +3,6 @@ const minify = false; //SET ME AS REQUIRED
 
 const path = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf')
 const { exec } = require('child_process');
 const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/Steve-Mcl/monaco-editor-esm-i18n */\n\n`;
 const excludeLibs = ["base.d.ts", "constants.d.ts", "index.d.ts", "inspector.d.ts", "punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
@@ -28,7 +27,7 @@ const {
 (function () {
     var nodeVer = process.version;
     nodeVer = nodeVer.replace("v", "");
-    nodeVer = "14.60.20"
+    nodeVer = "16.60.20"
     //get available nodejs types from npm
     var cmd1 = `npm view @types/node  versions  --json`;
     exec(cmd1, (error, stdout, stderr) => {

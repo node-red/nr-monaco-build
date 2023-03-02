@@ -34,7 +34,7 @@ module.exports = (env, argv) => {
             timings: true,
             colors: true
         },
-        target: ['web', 'es5'],
+        target: ['web', 'es6'],
         module: {
             rules: [{
                 test: /\.css$/,

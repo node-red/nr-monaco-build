@@ -1,6 +1,9 @@
 import * as monaco from 'monaco-editor-esm-i18n';
-window.monaco = monaco;
-window.MonacoEnvironment = window.MonacoEnvironment || {};
-if(!window.MonacoEnvironment.Locale) {
-    window.MonacoEnvironment.Locale = window.MonacoLocale
+const parent = self || window || globalThis;
+
+parent.monaco = monaco;
+monaco.parent = parent;
+parent.MonacoEnvironment = parent.MonacoEnvironment || {};
+if(!parent.MonacoEnvironment.Locale) {
+    parent.MonacoEnvironment.Locale = parent.MonacoLocale
 }
