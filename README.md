@@ -29,8 +29,8 @@ cd nr-monaco-build
 * Check & update `package.json` for latest version of `monaco-editor` (check [here](https://www.npmjs.com/package/monaco-editor)) and other dev dependencies
 
 #### Check + update node-red (function node/server-side) type defs
-* `node-red-types/func.d.ts`
-* `node-red-types/util.d.ts`
+* `./node-red-types/func.d.ts`
+* `./node-red-types/util.d.ts`
 
 ### Build
 
