@@ -277,5 +277,5 @@ declare class env {
      * @example 
      * ```const flowName = env.get("NR_FLOW_NAME");```
      */
-    static get(name:string) :string;
+    static get(name:string) :any;
 }
