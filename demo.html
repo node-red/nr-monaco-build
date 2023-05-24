@@ -14,14 +14,14 @@
     <h2>Demonstrating monaco editor esm with i18n</h2>
     <h3>Things to check...</h3>
     <ul>
-        <li>Theme should be set to <code>forge</code></li>
+        <li>Theme should be set to <code>forge-dark</code></li>
         <li>Intellisense for node globals, node-red utility functions should be present</li>
-        <li>Monaco lang should be spanish (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
+        <li>Monaco lang should be german (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
     </ul>
 
     <div id="monaco-editor" style="height: 500px;">MONACO</div>
 
-    <script src="./output/monaco/dist/locale/es.js"></script>
+    <script src="./output/monaco/dist/locale/de.js"></script>
     <script src="./output/monaco/dist/editor.js"></script>
 
     <script>
@@ -74,7 +74,7 @@ let e = env.get("host"); //<< hover over get - see rich tips
                 value: defCode,
                 language: "javascript"
             });
-            var themeName = "forge"
+            var themeName = "forge-dark"
             fetch(base + "theme/" + themeName + ".json").then(response => {
                 return response.json();
             }).then(theme => {
