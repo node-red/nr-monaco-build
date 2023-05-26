@@ -5,7 +5,7 @@ const recursive = require("recursive-readdir");
 const mkdirp = require("mkdirp");
 const replaceInFile = require("replace-in-file");
 const ncp = require("ncp").ncp;
-const rimraf = require("rimraf");
+const { rimraf } = require("rimraf");
 const readJson = require('read-package-json')
 const { semver } = require("./common");
 
@@ -66,11 +66,7 @@ function sourceFileExists(key) {
  * @param callback
  */
 function injectSourcePath(monacoVersion, callback) {
-    rimraf(monacoModDir, function (err) {
-        if (err) {
-            callback(err);
-            return;
-        }
+    rimraf(monacoModDir).then(() => {
         ncp(monacoDir, monacoModDir, function (err) {
             if (err) {
                 callback(err);
@@ -133,6 +129,8 @@ function injectSourcePath(monacoVersion, callback) {
                 callback();
             });
         });
+    }).catch(err => {
+        callback(err);
     });
 }
 
