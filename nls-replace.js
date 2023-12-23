@@ -24,21 +24,6 @@ function _format(message, args) {
     return result;
 }
 
-// export function localize(path, data, defaultMessage) {
-//     const key = typeof data === "object" ? data.key : data;
-//     const localeData = ((window.MonacoLocale || {}) || {}).data || {};
-//     let message = (localeData[path] || {})[key];
-//     if (!message) {
-//         message = defaultMessage;
-//     }
-//     const args = [];
-//     for (let _i = 3; _i < arguments.length; _i++) {
-//         args[_i - 3] = arguments[_i];
-//     }
-//     return _format(message, args);
-// }
-
-
 /**
  * @skipMangle
  */
@@ -83,7 +68,6 @@ export function localize2(path, data, defaultMessage, ...args) {
 }
 
 export function loadMessageBundle(file) {
-    console.log("NEW loadMessageBundle called : " + file);
     return localize;
 }
 
@@ -98,11 +82,3 @@ export function getConfiguredDefaultLocale() {
     return (self.MonacoLocale || {}).language;
 }
 
-// /**
-//  * @skipMangle
-//  */
-// export function getConfiguredDefaultLocale(_) {
-//     // This returns undefined because this implementation isn't used and is overwritten by the loader
-//     // when loaded.
-//     return undefined;
-// }
