@@ -1,5 +1,5 @@
 const path = require("path");
-const { monacoModDir } = require("./paths");
+const { monacoModDir } = require("./setup");
 const monacoModPath = path.resolve(__dirname, "node_modules", monacoModDir);
 const nls = require.resolve("./nls-replace.js");
 const LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin");

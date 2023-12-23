@@ -3,7 +3,7 @@
     "inherit": true,
     "rules": [
         {
-            "background": "FFFFFF",
+            "background": "f2f3fb",
             "token": ""
         },
         {
@@ -163,8 +163,7 @@
             "token": "storage.type"
         },
         {
-            "foreground": "ffffff",
-            "background": "c82829",
+            "foreground": "f12229",
             "token": "invalid"
         },
         {
@@ -173,25 +172,9 @@
             "token": "meta.separator"
         },
         {
-            "foreground": "ffffff",
+            "foreground": "f12229",
             "background": "8959a8",
             "token": "invalid.deprecated"
-        },
-        {
-            "foreground": "ffffff",
-            "token": "markup.inserted.diff"
-        },
-        {
-            "foreground": "ffffff",
-            "token": "markup.deleted.diff"
-        },
-        {
-            "foreground": "ffffff",
-            "token": "meta.diff.header.to-file"
-        },
-        {
-            "foreground": "ffffff",
-            "token": "meta.diff.header.from-file"
         },
         {
             "background": "718c00",
@@ -226,11 +209,19 @@
         }
     ],
     "colors": {
-        "editor.foreground": "#4D4D4C",
-        "editor.background": "#FFFFFF",
-        "editor.selectionBackground": "#D6D6D6",
-        "editor.lineHighlightBackground": "#EFEFEF",
-        "editorCursor.foreground": "#AEAFAD",
-        "editorWhitespace.foreground": "#D1D1D1"
+        "editor.foreground": "#1f2937",
+        "editor.background": "#ffffff", 
+        "editorCursor.foreground": "#4E4F5D",   
+        "editorLineNumber.foreground": "#1f2937",
+        "dropdown.background": "#F7F8FC",
+        "editor.selectionBackground": "#65718370",
+        "editor.inactiveSelectionBackground": "#65718330",
+        "editorWidget.background":"#F7F8FC",
+        "list.hoverForeground": "#F7F8FC",
+        "list.hoverBackground": "#657183",
+        "list.focusForeground": "#F7F8FC", 
+        "list.focusBackground": "#657183", 
+        "list.activeSelectionForeground": "#F7F8FC",
+        "list.activeSelectionBackground": "#657183"
     }
 }

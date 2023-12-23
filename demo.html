@@ -14,14 +14,14 @@
     <h2>Demonstrating monaco editor esm with i18n</h2>
     <h3>Things to check...</h3>
     <ul>
-        <li>Theme should be set to <code>forge</code></li>
+        <li>Theme should be set to <code>forge-dark</code></li>
         <li>Intellisense for node globals, node-red utility functions should be present</li>
-        <li>Monaco lang should be spanish (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
+        <li>Monaco lang should be german (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
     </ul>
 
     <div id="monaco-editor" style="height: 500px;">MONACO</div>
 
-    <script src="./output/monaco/dist/locale/es.js"></script>
+    <script src="./output/monaco/dist/locale/de.js"></script>
     <script src="./output/monaco/dist/editor.js"></script>
 
     <script>
@@ -29,12 +29,16 @@
         (function () {
             const base = "./output/monaco/dist/";
             const types = "./output/types/";
-            const defCode = `const fs = require("fs"); //<< should be of type fs & have intellisense
-const os = require("os"); //<< should be of type os & have intellisense
-const buf = Buffer.from([1,2,3]); //<< should be of type Buffer & have intellisense
-let m = RED.util.cloneMessage({}); //<< hover over cloneMessage - see rich tips
-let t = msg.topic; //<< see msg properties after entering msg.
-let e = env.get("host"); //<< hover over get - see rich tips
+            const defCode = `const fs = require("fs/promises") //<< should be of type fs/promises & have intellisense
+const os = require("os") // << should be of type os & have intellisense
+const buf = Buffer.from([1,2,3]) // << should be of type Buffer & have intellisense
+let m = RED.util.cloneMessage({}) // << hover over cloneMessage - see rich tips
+let t = msg.topic // << see msg properties after entering msg.
+let e = env.get("host") // << hover over get - see rich tips
+const path = node.path // << should be recognised by editor
+node.status({fill:"red",shape:"ring",text:"hello"}) // << should be recognised by editor
+node.error("hello") // << should be recognised by editor
+node.warn("hello") // << should be recognised by editor
 `
 
             const compilerOptions = {
@@ -49,7 +53,7 @@ let e = env.get("host"); //<< hover over get - see rich tips
                 moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
                 module: monaco.languages.typescript.ModuleKind.CommonJS,
                 typeRoots: ["types"],
-                lib: ["esnext"] //dont load DOM by default,
+                lib: ["esnext"] // don't load DOM by default,
             }
             monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
 
@@ -74,7 +78,7 @@ let e = env.get("host"); //<< hover over get - see rich tips
                 value: defCode,
                 language: "javascript"
             });
-            var themeName = "forge"
+            const themeName = "forge-dark"
             fetch(base + "theme/" + themeName + ".json").then(response => {
                 return response.json();
             }).then(theme => {
@@ -91,8 +95,12 @@ let e = env.get("host"); //<< hover over get - see rich tips
                 types + "node-red/util.d.ts",
                 types + "node-red/func.d.ts",
                 types + "node/globals.d.ts",
+                types + "node/buffer.d.ts",
+                types + "node/console.d.ts",
                 types + "node/fs.d.ts",
+                types + "node/fs/promises.d.ts",
                 types + "node/os.d.ts",
+                types + "node/timers.d.ts",
             ]
             var promises = urls.map(url => fetch(url).then(y => y.text()));
             Promise.all(promises).then(results => {

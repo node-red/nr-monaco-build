@@ -1,47 +1,47 @@
 
-const minify = false; //SET ME AS REQUIRED
+
 
 const path = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf')
 const { exec } = require('child_process');
-const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/Steve-Mcl/monaco-editor-esm-i18n */\n\n`;
+const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/node-red/nr-monaco-build */\n\n`;
 const excludeLibs = ["base.d.ts", "constants.d.ts", "index.d.ts", "inspector.d.ts", "punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
-const { createMinifier } = require("dts-minify");
+
 const { findClosestSemverMatch, deleteFileOrDir, mkDirSafe } = require("./common");
 
+const {
+    MINIFY_DTS,
+    NODE_LIB_SOURCE,
+    NODE_LIB_DESTINATION,
+    NODE_RED_LIB_SOURCE,
+    NODE_RED_LIB_DESTINATION,
+    NODE_VERSION_TO_INCLUDE
+} = require("./setup");
+
 let ts, minifier;
-if (minify) {
+if (MINIFY_DTS) {
+    const { createMinifier } = require("dts-minify");
     ts = require("typescript");
     minifier = createMinifier(ts);// setup (provide a TS Compiler API object)
 }
 
-
-const {
-    NODE_LIB_SOURCE,
-    NODE_LIB_DESTINATION,
-    NODE_RED_LIB_SOURCE,
-    NODE_RED_LIB_DESTINATION
-} = require("./paths");
-
-
 (function () {
-    var nodeVer = process.version;
-    nodeVer = nodeVer.replace("v", "");
-    nodeVer = "14.60.20"
+    let nodeVer = NODE_VERSION_TO_INCLUDE || process.version
+    if (nodeVer[0] === "v") { nodeVer = nodeVer.substring(1) }
+
     //get available nodejs types from npm
-    var cmd1 = `npm view @types/node  versions  --json`;
+    const cmd1 = `npm view @types/node  versions  --json`
     exec(cmd1, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error executing '${cmd2}': ${error}`);
             process.exit(-1); //npm view error
         }
         //determine closes version
-        var versions = JSON.parse(stdout);
-        var closestVersion = findClosestSemverMatch(nodeVer, versions);
+        const versions = JSON.parse(stdout);
+        const closestVersion = findClosestSemverMatch(nodeVer, versions);
 
         //install @types/node@closestVersion
-        var cmd2 = `npm i -s @types/node@${closestVersion} --save-dev`;
+        const cmd2 = `npm i -s @types/node@${closestVersion} --save-dev`;
         exec(cmd2, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error executing '${cmd2}': ${error}`);
@@ -77,7 +77,7 @@ function copyFiles(src, dst) {
                 const name = files.shift();
                 console.log(`Copying '${name}'`)
                 const output = note + readLibFile(name, src).replace(/\r\n/g, '\n');
-                if (minify) {
+                if (minifier) {
                     const minifiedText = minifier.minify(output, {
                         keepJsDocs: true, // false by default
                     });
@@ -93,8 +93,8 @@ function copyFiles(src, dst) {
     if (dirs && dirs.length) {
         for (let index = 0; index < dirs.length; index++) {
             const p = dirs[index];
-            var srcDir = path.join(src, p);
-            var dstDir = path.join(dst, p);
+            const srcDir = path.join(src, p);
+            const dstDir = path.join(dst, p);
             copyFiles(srcDir, dstDir);
         }
     }

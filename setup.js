@@ -18,6 +18,8 @@ exports.vsCodeLocDir = path.join(exports.gitDir, "vscode-loc");
 exports.vsCodeLocI18nDir = path.join(exports.vsCodeLocDir, "i18n");
 exports.generatedSourceLocaleDir = path.join(exports.targetDir, "monaco/dist/locale");
 
+exports.MINIFY_DTS = false;
+exports.NODE_VERSION_TO_INCLUDE = "v18.11.9";
 exports.NODE_LIB_SOURCE = path.join(exports.projectDir, 'node_modules/@types/node');
 exports.NODE_LIB_DESTINATION = path.join(exports.projectDir, 'output/types/node');
 
