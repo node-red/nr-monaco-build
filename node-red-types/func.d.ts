@@ -261,21 +261,30 @@ declare class global {
     static keys(store: string, callback: Function);
 }
 
+// (string & {}) is a workaround for offering string type completion without enforcing it. See https://github.com/microsoft/TypeScript/issues/29729#issuecomment-567871939
+type NR_ENV_NAME_STRING = 'NR_NODE_ID'|'NR_NODE_NAME'|'NR_NODE_PATH'|'NR_GROUP_ID'|'NR_GROUP_NAME'|'NR_FLOW_ID'|'NR_FLOW_NAME'|'NR_SUBFLOW_ID'|'NR_SUBFLOW_NAME'|'NR_SUBFLOW_PATH' | (string & {})
 declare class env {
     /** 
-     * Gets an environment variable value  
+     * Get an environment variable value defined in the OS, or in the global/flow/subflow/group environment variables.  
      * 
-     * Predefined Node-RED variables names:  
+     * Predefined node-red variables...  
      *   * `NR_NODE_ID` - the ID of the node
      *   * `NR_NODE_NAME` - the Name of the node
      *   * `NR_NODE_PATH` - the Path of the node
-     *   * `NR_GROUP_ID` - the ID of the parent group
-     *   * `NR_GROUP_NAME` - the Name of the parent group
+     *   * `NR_GROUP_ID` - the ID of the containing group
+     *   * `NR_GROUP_NAME` - the Name of the containing group
      *   * `NR_FLOW_ID` - the ID of the flow the node is on
      *   * `NR_FLOW_NAME` - the Name of the flow the node is on
-     * @param name - the name of the environment variable
+     *   * `NR_SUBFLOW_ID` - the ID of the subflow the node is in
+     *   * `NR_SUBFLOW_NAME` - the Name of the subflow the node is in
+     *   * `NR_SUBFLOW_PATH` - the Path of the subflow the node is in
+     * @param name - The name of the environment variable
      * @example 
-     * ```const flowName = env.get("NR_FLOW_NAME");```
+     * ```const flowName = env.get("NR_FLOW_NAME") // get the name of the flow```
+     * @example 
+     * ```const systemHomeDir = env.get("HOME") // get the user's home directory```
+     * @example 
+     * ```const systemHomeDir = env.get("LABEL1") // get the value of a global/flow/subflow/group defined variable named "LABEL1"```
      */
-    static get(name:"NR_NODE_ID"|"NR_NODE_NAME"|"NR_NODE_PATH"|"NR_GROUP_ID"|"NR_GROUP_NAME"|"NR_FLOW_ID"|"NR_FLOW_NAME"|string) :any;
+    static get(name:NR_ENV_NAME_STRING) :any;
 }
