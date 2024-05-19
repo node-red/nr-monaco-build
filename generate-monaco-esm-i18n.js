@@ -213,7 +213,7 @@ async function main() {
     mkdirp.sync(gitDir);
     injectSourcePath(monacoVersion, err => {
         if (err) throw err;
-        gitPullOrClone(vsCodeRepository, vsCodeLocDir, function (err) {
+        gitPullOrClone(vsCodeRepository, vsCodeLocDir, { shell: true }, function (err) {
             if (err) throw err;
 
             fs.readdir(vsCodeLocI18nDir, (err, langDirs) => {
