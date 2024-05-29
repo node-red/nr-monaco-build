@@ -17,7 +17,7 @@ const {
     vsCodeLocDir,
     vsCodeLocI18nDir,
     generatedSourceLocaleDir,
-} = require("./paths");
+} = require("./setup");
 
 const langDirPrefix = "vscode-language-pack-";
 const vsCodeRepository = "https://github.com/Microsoft/vscode-loc.git";
@@ -131,7 +131,7 @@ function injectSourcePath(monacoVersion, callback) {
         });
     }).catch(err => {
         callback(err);
-    });
+    })
 }
 
 /**
@@ -213,7 +213,7 @@ async function main() {
     mkdirp.sync(gitDir);
     injectSourcePath(monacoVersion, err => {
         if (err) throw err;
-        gitPullOrClone(vsCodeRepository, vsCodeLocDir, function (err) {
+        gitPullOrClone(vsCodeRepository, vsCodeLocDir, { shell: true }, function (err) {
             if (err) throw err;
 
             fs.readdir(vsCodeLocI18nDir, (err, langDirs) => {

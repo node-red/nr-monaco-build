@@ -65,9 +65,15 @@ and you should see monaco editor with the monokai theme and French menus (try op
 ### Add to node-red src
 
 ```bash
-cp -r output/monaco/dist \
-    <node-red-source-directory>/packages/node_modules/@node-red/editor-client/src/vendor/monaco/
+export nr_src=~/repos/github/node-red-org/node-red
+# clean up
+rm -rf $nr_src/packages/node_modules/@node-red/editor-client/src/vendor/monaco/dist/*
+rm -rf $nr_src/packages/node_modules/@node-red/editor-client/src/types/node/*
+rm -rf $nr_src/packages/node_modules/@node-red/editor-client/src/types/node-red/*
 
+# copy
+cp -r output/monaco/dist \
+    $nr_src/packages/node_modules/@node-red/editor-client/src/vendor/monaco/
 cp -r output/types \
-    <node-red-source-directory>/packages/node_modules/@node-red/editor-client/src/
+    $nr_src/packages/node_modules/@node-red/editor-client/src/
 ```
