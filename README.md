@@ -25,14 +25,22 @@ cd nr-monaco-build
 
 ### Prepare
 
-#### Firstly
-* Check & update `package.json` for latest version of `monaco-editor` (check [here](https://www.npmjs.com/package/monaco-editor)) and other dev dependencies
+#### Step 1
 
-#### Check + update node-red (function node/server-side) type defs
+Prepare the build:
+
+1. Check & update `package.json` for latest version of `monaco-editor` (check [here](https://www.npmjs.com/package/monaco-editor)) and other dev dependencies
+2. Update the `package.json` `version` field to match the version of `monaco-editor` you are using.
+
+#### Step 2
+
+Check + update node-red (function node/server-side) type defs
 * `./node-red-types/func.d.ts`
 * `./node-red-types/util.d.ts`
 
-### Build
+### Step 3
+
+Install dependencies, clean and build
 
 ```bash
 npm install --include=dev
@@ -64,7 +72,20 @@ and you should see monaco editor with the monokai theme and French menus (try op
 
 ### Add to node-red src
 
+#### Automatically
+
+If your Node-RED source is relative to this repo, you can run the following helper script:
+
 ```bash
+npm run copy
+```
+
+#### Manually
+
+When your Node-RED source is not relative to this repo, you can copy the files manually:
+
+```bash
+# Set the path to your node-red source e.g.
 export nr_src=~/repos/github/node-red-org/node-red
 # clean up
 rm -rf $nr_src/packages/node_modules/@node-red/editor-client/src/vendor/monaco/dist/*
@@ -76,4 +97,30 @@ cp -r output/monaco/dist \
     $nr_src/packages/node_modules/@node-red/editor-client/src/vendor/monaco/
 cp -r output/types \
     $nr_src/packages/node_modules/@node-red/editor-client/src/
+
+```
+
+### Additional helper scripts
+
+#### Build monaco in development mode
+
+```bash
+npm run build-dev
+```
+
+
+#### All in one (production mode)
+
+This will run `npm run clean`,  `npm run build`, `npm run copy` in sequence
+
+```bash
+npm run all
+```
+
+#### All in one (development mode)
+
+This will run `npm run clean`,  `npm run build-dev`, `npm run copy` in sequence
+
+```bash
+npm run all-dev
 ```

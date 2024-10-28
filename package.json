@@ -6,13 +6,25 @@
     "main": "index.js",
     "scripts": {
         "build": "npm run update-types && npm run generate && npm run generate-themes && npm run pack",
+        "build-dev": "npm run update-types && npm run generate && npm run generate-themes && npm run pack-dev",
+        "copy": "npm run copyCheck1 && npm run copyCheck1 && npm run copyPrep1 && npm run copyPrep2 && npm run copyPrep3 && npm run copyAct1 && npm run copyAct2",
+        "all": "npm run clean && npm run build && npm run copy",
+        "all-dev": "npm run clean && npm run build-dev && npm run copy",
         "clean": "rm -r -f output && rm -r -f temp",
         "generate": "node generate-monaco-esm-i18n.js",
         "generate-themes": "node generate-themes.js",
         "update-types": "node update-types.js",
         "pack": "npx webpack",
+        "pack-dev": "npx webpack --mode development",
         "demo": "npx http-server -p 8080 -c-1 -o demo.html",
-        "generate-extraLibs": "node generate-extraLibs.js"
+        "generate-extraLibs": "node generate-extraLibs.js",
+        "copyCheck1": "test -d output/monaco/dist",
+        "copyCheck2": "test -d ../node-red/packages/node_modules/@node-red/editor-client/src",
+        "copyPrep1": "rm -rf ../node-red/packages/node_modules/@node-red/editor-client/src/vendor/monaco/dist/*",
+        "copyPrep2": "rm -rf ../node-red/packages/node_modules/@node-red/editor-client/src/types/node/*",
+        "copyPrep3": "rm -rf ../node-red/packages/node_modules/@node-red/editor-client/src/types/node-red/*",
+        "copyAct1": "cp -r output/monaco/dist ../node-red/packages/node_modules/@node-red/editor-client/src/vendor/monaco/",
+        "copyAct2": "cp -r output/types ../node-red/packages/node_modules/@node-red/editor-client/src"
     },
     "keywords": [
         "monaco",
