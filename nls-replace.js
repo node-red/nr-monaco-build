@@ -81,4 +81,12 @@ export function config(opt) {
 export function getConfiguredDefaultLocale() {
     return (self.MonacoLocale || {}).language;
 }
-
+/**
+ * @skipMangle
+ */
+export function getNLSLanguage() {
+    return (self.MonacoLocale || {}).language;
+}
+export function getNLSMessages() {
+    return ((self.MonacoLocale || {}) || {}).data || {};
+}
