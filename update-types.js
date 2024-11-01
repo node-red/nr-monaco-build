@@ -3,7 +3,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
 const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/node-red/nr-monaco-build */\n\n`;
 const excludeLibs = ["base.d.ts", "constants.d.ts", "index.d.ts", "inspector.d.ts", "punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
 
@@ -31,29 +31,20 @@ if (MINIFY_DTS) {
 
     //get available nodejs types from npm
     const cmd1 = `npm view @types/node  versions  --json`
-    exec(cmd1, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error executing '${cmd2}': ${error}`);
-            process.exit(-1); //npm view error
-        }
-        //determine closes version
-        const versions = JSON.parse(stdout);
-        const closestVersion = findClosestSemverMatch(nodeVer, versions);
+    const r1 = execSync(cmd1)
 
-        //install @types/node@closestVersion
-        const cmd2 = `npm i -s @types/node@${closestVersion} --save-dev`;
-        exec(cmd2, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error executing '${cmd2}': ${error}`);
-                process.exit(-2); //npm install error
-            }
-            //import the libs from NODE_LIB_SOURCE to NODE_LIB_DESTINATION
-            deleteFileOrDir(NODE_LIB_DESTINATION);
-            deleteFileOrDir(NODE_RED_LIB_DESTINATION);
-            copyFiles(NODE_LIB_SOURCE, NODE_LIB_DESTINATION);
-            copyFiles(NODE_RED_LIB_SOURCE, NODE_RED_LIB_DESTINATION);
-        });
-    });
+    //determine closes version
+    const versions = JSON.parse(r1);
+    const closestVersion = findClosestSemverMatch(nodeVer, versions);
+
+    //install @types/node@closestVersion
+    const cmd2 = `npm i -s @types/node@${closestVersion} --save-dev`;
+    execSync(cmd2)
+    //import the libs from NODE_LIB_SOURCE to NODE_LIB_DESTINATION
+    deleteFileOrDir(NODE_LIB_DESTINATION);
+    deleteFileOrDir(NODE_RED_LIB_DESTINATION);
+    copyFiles(NODE_LIB_SOURCE, NODE_LIB_DESTINATION);
+    copyFiles(NODE_RED_LIB_SOURCE, NODE_RED_LIB_DESTINATION);
 })();
 
 

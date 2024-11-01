@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const recursive = require("recursive-readdir");
 const mkdirp = require("mkdirp");
-const replaceInFile = require("replace-in-file");
+const { replaceInFileSync } = require("replace-in-file");
 const ncp = require("ncp").ncp;
 const { rimraf } = require("rimraf");
 const readJson = require('read-package-json')
@@ -85,7 +85,7 @@ function injectSourcePath(monacoVersion, callback) {
                         //1b. Change to  localize("path/to/translation/item", xxxx
                         //2a. Find       localize.apply(
                         //2b. Change to  localize.apply("path/to/translation/item", xxxxx
-                        replaceInFile({
+                        replaceInFileSync({
                             files: file,
                             from: [
                                 /(?<!function )(localize\d*?\s*?\()/g, //match:-   .localize(   : localize(   localize2(   .localize2(   etc
@@ -96,9 +96,24 @@ function injectSourcePath(monacoVersion, callback) {
                                 `$1($2, ['${transPath}', `,
                             ],
                         });
-                        if (file.endsWith("iconLabels.js")) {
+                        if (file.endsWith("actionList.js")) {
+                            // node-red editor body has a client height of 0. This messes up the editor layout.
+                            // need to replace
+                            // * this.domNode.ownerDocument.body.clientHeight
+                            // with 
+                            // * dom.getClientArea(this.domNode.ownerDocument.body).height
+                            replaceInFileSync({
+                                files: file,
+                                from: [
+                                    'this.domNode.ownerDocument.body.clientHeight'
+                                ],
+                                to: [
+                                    'dom.getClientArea(this.domNode.ownerDocument.body).height'
+                                ],
+                            });
+                        } else if (file.endsWith("iconLabels.js")) {
                             //if a translation is missing, prevent error in  `stripIcons`  (ensures command palette is populated)
-                            replaceInFile({
+                            replaceInFileSync({
                                 files: file,
                                 from: [
                                     /stripIcons\(text\)\s?{/g
@@ -112,7 +127,7 @@ function injectSourcePath(monacoVersion, callback) {
                             //1. Find      const api = createMonacoBaseAPI();
                             //2. Insert    Object.defineProperty(api, 'version', {get: function() { return 'x.y.z' }});
                             //             export const version = api.version;
-                            replaceInFile({
+                            replaceInFileSync({
                                 files: file,
                                 from: [
                                     /(const\s+?)(\w*?)(\s+?=\s+?createMonacoBaseAPI\(\).*$)/gm

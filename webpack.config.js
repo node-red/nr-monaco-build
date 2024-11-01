@@ -8,9 +8,10 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = (env, argv) => {
+    const devMode = ["development", "dev"].includes(argv?.mode || "production");
     env = env || {};
-    // env.production = false;
-    env.production = env.production === false || env.production === "false" ? false : true;
+    env.production = env.production === true || env.production === "true" || !devMode
+    // env.production = false; // force dev mode build
     if (env.production) {
         console.log("Running webpack in production mode");
     } else {
