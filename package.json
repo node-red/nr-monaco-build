@@ -34,8 +34,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@types/node": "^18.11.9",
-        "copy-webpack-plugin": "^10.2.4",
-        "css-loader": "^6.7.1",
+        "degit": "^2.8.4",
         "dts-minify": "^0.3.3",
         "git-pull-or-clone": "^2.0.2",
         "glob": "^10.2.6",

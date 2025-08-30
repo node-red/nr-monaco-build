@@ -1,4 +1,4 @@
-const gitPullOrClone = require('git-pull-or-clone');
+const degit = require('degit');
 const fs = require("fs");
 const path = require("path");
 const recursive = require("recursive-readdir");
@@ -228,9 +228,8 @@ async function main() {
     mkdirp.sync(gitDir);
     injectSourcePath(monacoVersion, err => {
         if (err) throw err;
-        gitPullOrClone(vsCodeRepository, vsCodeLocDir, { shell: true }, function (err) {
-            if (err) throw err;
-
+        const emitter = degit('Microsoft/vscode-loc', { force: true });
+        emitter.clone(vsCodeLocDir).then(() => {
             fs.readdir(vsCodeLocI18nDir, (err, langDirs) => {
                 if (err) throw err;
                 langDirs.forEach(langDir => {
@@ -252,6 +251,8 @@ async function main() {
                     }
                 })
             });
+        }).catch(err => {
+            throw err;
         });
     });
 }
