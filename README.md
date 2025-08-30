@@ -68,7 +68,7 @@ Now go to
 http://localhost:8080/demo.html
 ```
 
-and you should see monaco editor with the monokai theme and French menus (try opening the context menu with a right click)
+and you should see monaco editor with a theme set and foreign menus (try opening the context menu with a right click)
 
 ### Add to node-red src
 
