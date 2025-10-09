@@ -1,4 +1,4 @@
-const gitPullOrClone = require('git-pull-or-clone');
+const degit = require('degit');
 const fs = require("fs");
 const path = require("path");
 const recursive = require("recursive-readdir");
@@ -96,7 +96,24 @@ function injectSourcePath(monacoVersion, callback) {
                                 `$1($2, ['${transPath}', `,
                             ],
                         });
-                        if (file.endsWith("actionList.js")) {
+                        if (file.endsWith("base\\common\\cancellation.js") || file.endsWith("base/common/cancellation.js")) {
+                            // Disable this line to prevent firing the event with undefined
+                            // See: https://github.com/microsoft/monaco-editor/issues/4389#issuecomment-2715085208
+                            replaceInFileSync({
+                                files: file,
+                                from: /this\._emitter\.fire\(undefined\);/,
+                                to: '// Disabled by nr-monaco-build: this._emitter.fire(undefined);',
+                            });
+                        } else if (file.endsWith("base\\common\\async.js") || file.endsWith("base/common/async.js")) {
+                            // Disable this line to prevent firing the event with undefined
+                            // See: https://github.com/cardstack/boxel/commit/7cacc9e15020696b89e07e4badd4f6a124975109
+                            replaceInFileSync({
+                                files: file,
+                                // this.doReject?.(new CancellationError());
+                                from: /this\.doReject\?\.\(new CancellationError/,
+                                to: '// Disabled by nr-monaco-build: this.doReject?.(new CancellationError',
+                            });
+                        } else if (file.endsWith("actionList.js")) {
                             // node-red editor body has a client height of 0. This messes up the editor layout.
                             // need to replace
                             // * this.domNode.ownerDocument.body.clientHeight
@@ -228,9 +245,8 @@ async function main() {
     mkdirp.sync(gitDir);
     injectSourcePath(monacoVersion, err => {
         if (err) throw err;
-        gitPullOrClone(vsCodeRepository, vsCodeLocDir, { shell: true }, function (err) {
-            if (err) throw err;
-
+        const emitter = degit('Microsoft/vscode-loc', { force: true });
+        emitter.clone(vsCodeLocDir).then(() => {
             fs.readdir(vsCodeLocI18nDir, (err, langDirs) => {
                 if (err) throw err;
                 langDirs.forEach(langDir => {
@@ -252,6 +268,8 @@ async function main() {
                     }
                 })
             });
+        }).catch(err => {
+            throw err;
         });
     });
 }

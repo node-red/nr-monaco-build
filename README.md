@@ -31,6 +31,7 @@ Prepare the build:
 
 1. Check & update `package.json` for latest version of `monaco-editor` (check [here](https://www.npmjs.com/package/monaco-editor)) and other dev dependencies
 2. Update the `package.json` `version` field to match the version of `monaco-editor` you are using.
+3. Check + update `setup.js` in particular the node version set in `env.NODE_VERSION_TO_INCLUDE` This should match a version found in [@types/node](https://www.npmjs.com/package/@types/node?activeTab=versions) on NPM e.g. `v20.14.8`
 
 #### Step 2
 
@@ -68,7 +69,7 @@ Now go to
 http://localhost:8080/demo.html
 ```
 
-and you should see monaco editor with the monokai theme and French menus (try opening the context menu with a right click)
+and you should see monaco editor with a theme set and foreign menus (try opening the context menu with a right click)
 
 ### Add to node-red src
 
