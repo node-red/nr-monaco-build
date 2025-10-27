@@ -29,7 +29,11 @@ interface NodeStatus {
     /** The shape property can be: ring or dot */
     shape?: 'ring'|'dot'|AnyString;
     /** The text to display */
-    text?: string|boolean|number
+    text?: string|boolean|number;
+    /** Delay in milliseconds before clearing the status or restoring the previous non visual status if {@link ephemeral} is enabled */
+    duration?: number;
+    /** If enabled, the status is visual only; it will not trigger `Status` nodes */
+    ephemeral?: boolean;
 }
 
 declare class node {
