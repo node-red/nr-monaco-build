@@ -13,6 +13,9 @@ declare const __msgid__:string;
 declare const util:typeof import('util')
 declare const promisify:typeof import('util').promisify
 
+/** Helper type to enable autocomplete of String */
+type AnyString = (string & {});
+
 /**
  * @typedef NodeStatus
  * @type {object}
@@ -22,9 +25,9 @@ declare const promisify:typeof import('util').promisify
  */
 interface NodeStatus {
     /** The fill property can be: red, green, yellow, blue or grey */
-    fill?: 'red'|'green'|'yellow'|'blue'|'grey'|string,
+    fill?: 'red'|'green'|'yellow'|'blue'|'grey'|AnyString;
     /** The shape property can be: ring or dot */
-    shape?: 'ring'|'dot'|string,
+    shape?: 'ring'|'dot'|AnyString;
     /** The text to display */
     text?: string|boolean|number
 }
