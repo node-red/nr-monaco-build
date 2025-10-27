@@ -30,9 +30,9 @@ interface NodeStatus {
     shape?: 'ring'|'dot'|AnyString;
     /** The text to display */
     text?: string|boolean|number;
-    /** Delay in milliseconds before clearing the status or restoring the previous non visual status if {@link ephemeral} is enabled */
+    /** Delay in milliseconds before clearing the status or restoring the previous non visual status if `ephemeral` is enabled. */
     duration?: number;
-    /** If enabled, the status is visual only; it will not trigger `Status` nodes */
+    /** If enabled, the status is visual only; it will not trigger `Status` nodes. Default `duration` 5s. */
     ephemeral?: boolean;
 }
 
