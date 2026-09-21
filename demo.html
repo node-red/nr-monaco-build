@@ -16,16 +16,40 @@
     <ul>
         <li>Theme should be set to <code>forge-dark</code></li>
         <li>Intellisense for node globals, node-red utility functions should be present</li>
-        <li>Monaco lang should be german (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
+        <li>Monaco lang should be spanish (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
+        <li>Additional language support should be present e.g. SQL</li>
+        <li>`monaco.version` should report the expected version</li>
     </ul>
+    <!-- center editors -->
+    <div style="width: 80%; margin: auto;">
+        <div id="monaco-version">Monaco version: unknown</div>
+        <br>
+        <div id="monaco-editor" style="height: 250px; width: 100%;">JS Editor</div>
+        <br>
+        <div id="monaco-editor-html" style="height: 175px; width: 100%;">HTML Editor</div>
+        <br>
+        <div id="monaco-editor-css" style="height: 175px; width: 100%;">CSS Editor</div>
+        <br>
+        <div id="monaco-editor-json" style="height: 175px; width: 100%;">JSON Editor</div>
+        <br>
+        <div id="monaco-editor-sql" style="height: 175px; width: 100%;">SQL Editor</div>
+    </div>
 
-    <div id="monaco-editor" style="height: 500px;">MONACO</div>
-
-    <script src="./output/monaco/dist/locale/de.js"></script>
+    <script src="./output/monaco/dist/locale/es.js"></script>
     <script src="./output/monaco/dist/editor.js"></script>
 
     <script>
+        let versionEl = document.getElementById("monaco-version");
+        if (versionEl) {
+            versionEl.textContent = "Monaco version: " + (monaco.version || "unknown");
+        }
+
         let editor;
+        let editorHtml;
+        let editorCss;
+        let editorJson;
+        let editorSql;
+
         (function () {
             const base = "./output/monaco/dist/";
             const types = "./output/types/";
@@ -78,6 +102,23 @@ node.warn("hello") // << should be recognised by editor
                 value: defCode,
                 language: "javascript"
             });
+            editorHtml = monaco.editor.create(document.getElementById("monaco-editor-html"), {
+                value: "<div>Hello</div>",
+                language: "html"
+            });
+            editorCss = monaco.editor.create(document.getElementById("monaco-editor-css"), {
+                value: "body { background: red; }",
+                language: "css"
+            });
+            editorJson = monaco.editor.create(document.getElementById("monaco-editor-json"), {
+                value: "{\n\t\"hello\": \"world\"\n}",
+                language: "json"
+            });
+            editorSql = monaco.editor.create(document.getElementById("monaco-editor-sql"), {
+                value: "SELECT * FROM users WHERE name = 'John'",
+                language: "sql"
+            });
+
             const themeName = "forge-dark"
             fetch(base + "theme/" + themeName + ".json").then(response => {
                 return response.json();
