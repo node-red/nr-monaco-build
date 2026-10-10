@@ -8,9 +8,4 @@
 import * as monaco from 'monaco-editor-esm-i18n';
 const parent = typeof globalThis === "object" ? globalThis : typeof window === "object" ? window : typeof self === "object" ? self : global;
 parent.monaco = monaco;
-monaco.parent = parent;
 parent.MonacoEnvironment = parent.MonacoEnvironment || {};
-monaco.MonacoLocale = parent.MonacoEnvironment.Locale;
-if(!parent.MonacoEnvironment.Locale) {
-    parent.MonacoEnvironment.Locale = parent.MonacoLocale
-}
