@@ -16,10 +16,14 @@
     <ul>
         <li>Theme should be set to <code>forge-dark</code></li>
         <li>Intellisense for node globals, node-red utility functions should be present</li>
-        <li>Monaco lang should be spanish (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
+        <li>Monaco lang defaults to spanish - use the dropdown below to change it (reloads the page), then check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd> </li>
         <li>Additional language support should be present e.g. SQL</li>
         <li>`monaco.version` should report the expected version</li>
     </ul>
+    <div>
+        <label for="lang-picker">Language: </label>
+        <select id="lang-picker"></select>
+    </div>
     <!-- center editors -->
     <div style="width: 80%; margin: auto;">
         <div id="monaco-version">Monaco version: unknown</div>
@@ -35,7 +39,14 @@
         <div id="monaco-editor-sql" style="height: 175px; width: 100%;">SQL Editor</div>
     </div>
 
-    <script src="./output/monaco/dist/locale/es.js"></script>
+    <script>
+        // Language is picked via ?lang=<code> and applied by reloading the page - see the
+        // dropdown below. "en" needs no locale script (it's the untranslated baseline).
+        var lang = new URLSearchParams(location.search).get("lang") || "es";
+        if (lang !== "en") {
+            document.write('<script src="./output/monaco/dist/locale/' + lang + '.js"><' + '/script>');
+        }
+    </script>
     <script src="./output/monaco/dist/editor.js"></script>
 
     <script>
@@ -43,6 +54,27 @@
         if (versionEl) {
             versionEl.textContent = "Monaco version: " + (monaco.version || "unknown");
         }
+
+        // Populate the language picker and reload with the chosen language on change.
+        // Keep this list in sync with output/monaco/dist/locale/*.js.
+        const langNames = {
+            en: "English", cs: "Czech", de: "German", es: "Spanish", fr: "French",
+            it: "Italian", ja: "Japanese", ko: "Korean", pl: "Polish", "pt-br": "Portuguese (Brazil)",
+            ru: "Russian", tr: "Turkish", "zh-cn": "Chinese (Simplified)", "zh-tw": "Chinese (Traditional)"
+        };
+        const langPicker = document.getElementById("lang-picker");
+        Object.keys(langNames).forEach(code => {
+            const opt = document.createElement("option");
+            opt.value = code;
+            opt.textContent = `${code} - ${langNames[code]}`;
+            opt.selected = code === lang;
+            langPicker.appendChild(opt);
+        });
+        langPicker.addEventListener("change", () => {
+            // Always set lang explicitly (including "lang=en") so a no-param URL keeps
+            // defaulting to Spanish without being confused with an explicit English pick.
+            location.search = `lang=${langPicker.value}`;
+        });
 
         let editor;
         let editorHtml;
