@@ -69,17 +69,17 @@ node.warn("hello") // << should be recognised by editor
                 allowJs: true,
                 checkJs: true,
                 allowNonTsExtensions: true,
-                target: monaco.languages.typescript.ScriptTarget.ESNext,
+                target: monaco.typescript.ScriptTarget.ESNext,
                 strictNullChecks: false,
                 strictPropertyInitialization: true,
                 strictFunctionTypes: true,
                 strictBindCallApply: true,
-                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                moduleResolution: monaco.typescript.ModuleResolutionKind.NodeJs,
+                module: monaco.typescript.ModuleKind.CommonJS,
                 typeRoots: ["types"],
                 lib: ["esnext"] // don't load DOM by default,
             }
-            monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+            monaco.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
 
             const diagnosticOptions = {
                 noSemanticValidation: false,
@@ -96,7 +96,7 @@ node.warn("hello") // << should be recognised by editor
                     80004, //JSDoc types may be moved to TypeScript types.
                 ]
             };
-            monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(diagnosticOptions);
+            monaco.typescript.javascriptDefaults.setDiagnosticsOptions(diagnosticOptions);
 
             editor = monaco.editor.create(document.getElementById("monaco-editor"), {
                 value: defCode,
@@ -149,7 +149,7 @@ node.warn("hello") // << should be recognised by editor
                 for (let index = 0; index < results.length; index++) {
                     const ts = results[index];
                     const fn = urls[index].replace(types, "");
-                    monaco.languages.typescript.javascriptDefaults.addExtraLib(ts, `file://types/${fn}`);
+                    monaco.typescript.javascriptDefaults.addExtraLib(ts, `file://types/${fn}`);
                 }
             });
         })();

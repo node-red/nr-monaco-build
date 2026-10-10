@@ -81,9 +81,12 @@ function injectSourcePath(monacoVersion, callback) {
                                     `stripIcons(text) {\n  text = text || "";`
                                 ],
                             });
-                        } else if (file.search(/[\\|\/]editor[\\|\/]editor.api2.js$/) > -1) {
-                            // file should be located at node_modules/monaco-editor-esm-i18n/esm/vs/editor/editor.api2.js
-                            // insert version:
+                        } else if (file.search(/[\\|\/]editor[\\|\/]editor\.api2?\.js$/) > -1) {
+                            // Up to monaco 0.55.x the base API was constructed in editor.api2.js, with
+                            // editor.api.js/editor.main.js re-exporting `from './editor.api2.js'`.
+                            // From monaco 0.56.0 editor.api2.js was merged directly into editor.api.js, so
+                            // this now matches editor.api.js itself. Either way, inject the version getter
+                            // right after whichever file actually calls createMonacoBaseAPI().
                             // 1. Find      const api = createMonacoBaseAPI();
                             // 2. Insert    Object.defineProperty(api, 'version', {get: function() { return 'x.y.z' }});
                             //             export const version = api.version;
@@ -98,30 +101,17 @@ function injectSourcePath(monacoVersion, callback) {
                                     `\nexport const version = $2.version;`
                                 ],
                             });
-                        } else if (file.search(/[\\|\/]editor[\\|\/]editor.api.js$/) > -1) {
-                            // file should be located at node_modules/monaco-editor-esm-i18n/esm/vs/editor/editor.api.js
-                            // add export version:
-                            // find: export { ... }
-                            // replace with: export { ..., version }
+                        }
+                        // Any file that re-exports the base API symbols `from` editor.api.js/editor.api2.js
+                        // (editor.main.js and, from monaco 0.56.0, the new esm/vs/index.js package entry
+                        // point) needs `version` added to its re-export list too. Applied generically
+                        // (not gated to a specific filename) since the package entry point/path has moved
+                        // between monaco versions and is a no-op replace-in-file for files that don't match.
+                        {
                             replaceInFileSync({
                                 files: file,
                                 from: [
-                                    /(export\s*{[^}]*?)(\s*})/gm
-                                ],
-                                to: [
-                                    `$1, version$2`
-                                ],
-                            });
-                        } else if (file.search(/[\\|\/]editor[\\|\/]editor.main.js$/) > -1) {
-                            // file "node_modules\monaco-editor-esm-i18n\esm\vs\editor\editor.main.js"
-                            // file should be located at node_modules/monaco-editor-esm-i18n/esm/vs/editor/editor.main.js
-                            // add export version:
-                            // find: export { ... } from './editor.api2.js'
-                            // replace with: export { ..., version } from './editor.api2.js'
-                            replaceInFileSync({
-                                files: file,
-                                from: [
-                                    /(export\s*{[^}]*?)(\s*}\s*from\s*['"]\.\/editor\.api2\.js['"])/gm
+                                    /(export\s*{[^}]*?)(\s*}\s*from\s*['"]\.\/(?:editor\/)?editor\.api2?\.js['"])/gm
                                 ],
                                 to: [
                                     `$1, version$2`

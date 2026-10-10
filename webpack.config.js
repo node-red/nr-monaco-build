@@ -49,8 +49,10 @@ module.exports = (env, argv) => {
             ]
         },
         plugins: [
-            new NormalModuleReplacementPlugin(/monaco-editor-esm-i18n\/esm\/vs\/language\/(json|css|html|typescript)\/.*_worker.js$/, (resource) => {
-                resource.request = resource.request.replace('monaco-editor-esm-i18n/esm', 'monaco-editor/esm');
+            // As of monaco-editor 0.56.0 the language worker entry files moved from
+            // esm/vs/language/<lang>/*_worker.js to esm/vs/languages/features/<lang>/*.worker.js.
+            new NormalModuleReplacementPlugin(/monaco-editor-esm-i18n[\\/]esm[\\/]vs[\\/]languages[\\/]features[\\/](json|css|html|typescript)[\\/].*\.worker\.js$/, (resource) => {
+                resource.request = resource.request.replace(/monaco-editor-esm-i18n(?=[\\/]esm)/, 'monaco-editor');
             }),
             new MonacoWebpackPlugin({ globalAPI: true, monacoEditorPath: monacoModPath }),
             new LimitChunkCountPlugin({
@@ -61,13 +63,13 @@ module.exports = (env, argv) => {
                     { from: 'node_modules/monaco-themes/LICENSE', to: "theme" },
                     { from: 'node_modules/monaco-editor-esm-i18n/ThirdPartyNotices.txt', to: "ThirdPartyNotices.txt" },
                     { from: 'node_modules/monaco-editor-esm-i18n/LICENSE', to: "LICENSE", toType: "file" },
-                    // Copy all nls.messages.*.js files into output/locale and strip the leading "nls.messages." from the filename
+                    // Copy each language's locale file into output/locale.
+                    // As of monaco-editor 0.56.0 these live at esm/vs/nls/lang/<lang>.js (previously
+                    // esm/nls.messages.<lang>.js) and set globalThis._VSCODE_NLS_MESSAGES themselves.
                     {
-                        from: 'node_modules/monaco-editor-esm-i18n/esm/nls.messages.*.js',
+                        from: 'node_modules/monaco-editor-esm-i18n/esm/vs/nls/lang/*.js',
                         to: ({ context, absoluteFilename }) => {
-                            // targetPath will be like 'nls.messages.en.js' - remove the prefix
-                            const base = path.basename(absoluteFilename);
-                            return 'locale/' + base.replace(/^nls\.messages\./, '');
+                            return 'locale/' + path.basename(absoluteFilename);
                         }
                     }
                 ]

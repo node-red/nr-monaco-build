@@ -1,6 +1,6 @@
 {
     "name": "nr-monaco-build",
-    "version": "0.55.1",
+    "version": "0.57.0",
     "description": "A wrapper to generate an es6 monaco editor with i18n, specifically developed for node-red",
     "private": true,
     "main": "index.js",
@@ -40,8 +40,8 @@
         "dts-minify": "^0.3.3",
         "glob": "^10.2.6",
         "mkdirp": "^3.0.1",
-        "monaco-editor": "0.55.1",
-        "monaco-editor-webpack-plugin": "^7.1.0",
+        "monaco-editor": "0.57.0",
+        "monaco-editor-webpack-plugin": "^7.1.1",
         "monaco-themes": "^0.4.7",
         "ncp": "^2.0.0",
         "read-package-json": "^7.0.1",
