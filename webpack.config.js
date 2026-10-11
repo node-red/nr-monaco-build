@@ -1,9 +1,9 @@
 const path = require("path");
 const { monacoModDir } = require("./setup");
 const monacoModPath = path.resolve(__dirname, "node_modules", monacoModDir);
+const nls = require.resolve("./nls-replace.js");
 const LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin");
-const fs = require('fs');
-const NormalModuleReplacementPlugin = require("webpack/lib/NormalModuleReplacementPlugin");
+const NormalModuleWebpackReplacementPlugin = require("webpack/lib/NormalModuleReplacementPlugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
@@ -22,10 +22,8 @@ module.exports = (env, argv) => {
         devtool: env.production ? undefined : "inline-source-map",
         entry: { editor: "./index.js" },
         output: {
-            globalObject: 'self',
             path: path.resolve(__dirname, "output", "monaco", "dist"),
-            filename: 'editor.js',
-            chunkFilename: '[name].js'
+            filename: 'editor.js'
         },
         stats: {
             assets: true,
@@ -49,10 +47,9 @@ module.exports = (env, argv) => {
             ]
         },
         plugins: [
-            // As of monaco-editor 0.56.0 the language worker entry files moved from
-            // esm/vs/language/<lang>/*_worker.js to esm/vs/languages/features/<lang>/*.worker.js.
-            new NormalModuleReplacementPlugin(/monaco-editor-esm-i18n[\\/]esm[\\/]vs[\\/]languages[\\/]features[\\/](json|css|html|typescript)[\\/].*\.worker\.js$/, (resource) => {
-                resource.request = resource.request.replace(/monaco-editor-esm-i18n(?=[\\/]esm)/, 'monaco-editor');
+            new NormalModuleWebpackReplacementPlugin(/\/(vscode\-)?nls\.js/, function (resource) {
+                resource.request = nls;
+                resource.resource = nls;
             }),
             new MonacoWebpackPlugin({ globalAPI: true, monacoEditorPath: monacoModPath }),
             new LimitChunkCountPlugin({
@@ -62,40 +59,16 @@ module.exports = (env, argv) => {
                 patterns: [
                     { from: 'node_modules/monaco-themes/LICENSE', to: "theme" },
                     { from: 'node_modules/monaco-editor-esm-i18n/ThirdPartyNotices.txt', to: "ThirdPartyNotices.txt" },
-                    { from: 'node_modules/monaco-editor-esm-i18n/LICENSE', to: "LICENSE", toType: "file" },
-                    // Copy each language's locale file into output/locale.
-                    // As of monaco-editor 0.56.0 these live at esm/vs/nls/lang/<lang>.js (previously
-                    // esm/nls.messages.<lang>.js) and set globalThis._VSCODE_NLS_MESSAGES themselves.
-                    {
-                        from: 'node_modules/monaco-editor-esm-i18n/esm/vs/nls/lang/*.js',
-                        to: ({ context, absoluteFilename }) => {
-                            return 'locale/' + path.basename(absoluteFilename);
-                        }
-                    }
+                    { from: 'node_modules/monaco-editor-esm-i18n/LICENSE', to: "LICENSE", toType: "file" }
                 ]
             }),
-            new (class RemoveDuplicatedMonacoWorkersPlugin {
-                apply(compiler) {
-                    compiler.hooks.afterEmit.tapAsync('RemoveDuplicatedMonacoWorkersPlugin', async (compilation, callback) => {
-                        try {
-                            const out = compiler.options.output.path;
-                            const files = await fs.promises.readdir(out);
-                            const targets = files.filter(f => f.startsWith('node_modules_monaco-'));
-                            await Promise.all(targets.map(f => fs.promises.unlink(path.join(out, f))));
-                        } catch (err) {
-                            compilation.warnings.push(new Error('RemoveDuplicatedMonacoWorkersPlugin: ' + (err && err.message || err)));
-                        }
-                        callback();
-                    });
-                }
-            })(),
         ],
 
         optimization: {
             minimize: env.production ? true : false,
-            chunkIds: 'named',
-            runtimeChunk: false,
-            splitChunks: false,
+            splitChunks: {
+                minSize: 9999999999999999,
+            }
         }
     };
 };
