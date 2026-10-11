@@ -71,6 +71,31 @@ http://localhost:8080/demo.html
 
 and you should see monaco editor with a theme set and foreign menus (try opening the context menu with a right click)
 
+### Run the tests
+
+```bash
+npm test
+```
+
+No build or network needed. It copies the types with `update-types.js` into a temp folder, then checks them the way node-red's Function node editor loads them (one `.d.ts` per module, see `test/fixtures/editor-modules.js`):
+
+* default globals like `Buffer.from()`, `NodeJS.TypedArray`, `node.send()` and `RED.util` resolve to real types, not `any`
+* every module in node-red's `knownModules` resolves when added on the Setup tab
+* the exclude list in `update-types.js` still matches real files, and nothing it excludes ships
+* types that already fail to resolve, and the list of shipped files, match `test/baselines/`
+
+When a version bump changes a baseline on purpose, run `npm run test:update-baseline` and review the diff before committing it.
+
+Other suites:
+
+| Command | What it does | Needs |
+| --- | --- | --- |
+| `npm run test:build` | clean, full build, then all of the above against `output/`, plus checks on the bundle, workers, locales and themes | network |
+| `npm run test:browser` | loads `output/monaco/dist` in headless Chromium: workers run, locales translate, and monaco's TS worker agrees with the tests' type checks | a build, and `npx playwright install chromium` once |
+| `npm run test:node-red-sync` | compares `node-red-types/` and `test/fixtures/editor-modules.js` with node-red | `NODE_RED_DIR=../node-red` for a local checkout, or `NODE_RED_REF=<branch>` for GitHub (default `master`) |
+
+If node-red changes `knownModules` or `defaultServerSideTypes` in `monaco.js`, copy the change into `test/fixtures/editor-modules.js`. `npm run test:node-red-sync` tells you when they differ.
+
 ### Add to node-red src
 
 #### Automatically
