@@ -1,10 +1,11 @@
 /**
- * Is this repo in step with node-red?
+ * Is the node-red this build is going into in step with this repo?
  *
- * node-red-types/*.d.ts are edited here and copied into node-red, but node-red also gets direct
- * commits to its copies (that is how `node.linkcall()` and a stale `RED.util.linkcall` drifted).
+ * node-red-types/*.d.ts are edited here and copied into node-red by `npm run copy`. When node-red's
+ * copies get changed directly instead (that is how `node.linkcall()` and a stale
+ * `RED.util.linkcall` drifted), that change has to come back here or the next copy undoes it.
  * And test/fixtures/editor-modules.js is a copy of what node-red's monaco.js loads, so the type
- * tests are only as good as that copy.
+ * tests are only as good as that copy. Expect differences while the matching node-red PR is open.
  *
  * This compares both with node-red. Not part of `npm test`, because the answer depends on
  * another repo's state. Run `npm run test:node-red-sync`, with one of:
