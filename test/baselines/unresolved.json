@@ -1,0 +1,250 @@
+{
+    "global Buffer": [],
+    "global console": [],
+    "global util": [
+        "aborted(signal)",
+        "convertProcessSignalToExitCode(signal)",
+        "transferableAbortController returns",
+        "transferableAbortSignal returns",
+        "transferableAbortSignal(signal)"
+    ],
+    "global promisify": [],
+    "global node": [],
+    "global context": [],
+    "global flow": [],
+    "global global": [],
+    "global env": [],
+    "global RED.util": [
+        "evaluateNodeProperty(node)",
+        "prepareJSONataExpression(node)"
+    ],
+    "global URL": [],
+    "global URLSearchParams": [],
+    "global setTimeout": [
+        "__promisify__"
+    ],
+    "global setInterval": [],
+    "global setImmediate": [
+        "__promisify__"
+    ],
+    "global clearTimeout": [],
+    "global queueMicrotask": [],
+    "global structuredClone": [
+        "<itself>"
+    ],
+    "module assert": [
+        "strict"
+    ],
+    "module assert/strict": [
+        "Assert",
+        "AssertOptions",
+        "AssertPredicate",
+        "AssertStrict",
+        "AssertionError",
+        "AssertionErrorOptions",
+        "CallTracker",
+        "CallTrackerCall",
+        "CallTrackerReportInformation",
+        "deepEqual",
+        "deepStrictEqual",
+        "doesNotMatch",
+        "doesNotReject",
+        "doesNotThrow",
+        "equal",
+        "fail",
+        "ifError",
+        "match",
+        "notDeepEqual",
+        "notDeepStrictEqual",
+        "notEqual",
+        "notStrictEqual",
+        "ok",
+        "partialDeepStrictEqual",
+        "rejects",
+        "strictEqual",
+        "throws"
+    ],
+    "module async_hooks": [],
+    "module buffer": [],
+    "module child_process": [],
+    "module cluster": [],
+    "module console": [],
+    "module crypto": [
+        "createCipheriv(options)",
+        "createDecipheriv(options)",
+        "createHmac(options)",
+        "createSign(options)",
+        "createVerify(options)"
+    ],
+    "module dgram": [],
+    "module dns": [
+        "promises"
+    ],
+    "module dns/promises": [
+        "Resolver new(options)",
+        "lookup(options)",
+        "resolve4(options)",
+        "resolve6(options)"
+    ],
+    "module domain": [],
+    "module events": [
+        "addAbortListener(signal)",
+        "getEventListeners(emitter)",
+        "getMaxListeners(emitter)",
+        "listenerCount(emitter)",
+        "on(emitter)",
+        "once(emitter)"
+    ],
+    "module fs": [
+        "appendFile(options)",
+        "appendFileSync(options)",
+        "promises",
+        "writeFile(options)",
+        "writeFileSync(options)"
+    ],
+    "module fs/promises": [
+        "access(path)",
+        "appendFile(options)",
+        "appendFile(path)",
+        "chmod(mode)",
+        "chmod(path)",
+        "chown(path)",
+        "constants",
+        "copyFile(dest)",
+        "copyFile(src)",
+        "cp(opts)",
+        "glob(options)",
+        "lchmod(mode)",
+        "lchmod(path)",
+        "lchown(path)",
+        "link(existingPath)",
+        "link(newPath)",
+        "lstat(opts)",
+        "lstat(path)",
+        "lutimes(atime)",
+        "lutimes(mtime)",
+        "lutimes(path)",
+        "mkdir(options)",
+        "mkdir(path)",
+        "mkdtemp(options)",
+        "mkdtempDisposable(options)",
+        "mkdtempDisposable(prefix)",
+        "open(mode)",
+        "open(path)",
+        "opendir(options)",
+        "opendir(path)",
+        "readFile(options)",
+        "readFile(path)",
+        "readdir(options)",
+        "readdir(path)",
+        "readlink(options)",
+        "readlink(path)",
+        "realpath(options)",
+        "realpath(path)",
+        "rename(newPath)",
+        "rename(oldPath)",
+        "rm(options)",
+        "rm(path)",
+        "rmdir(options)",
+        "rmdir(path)",
+        "stat(opts)",
+        "stat(path)",
+        "statfs(opts)",
+        "statfs(path)",
+        "symlink(path)",
+        "symlink(target)",
+        "truncate(path)",
+        "unlink(path)",
+        "utimes(atime)",
+        "utimes(mtime)",
+        "utimes(path)",
+        "watch(filename)",
+        "writeFile(file)",
+        "writeFile(options)"
+    ],
+    "module http": [
+        "CloseEvent",
+        "IncomingMessage new(socket)",
+        "MessageEvent",
+        "WebSocket"
+    ],
+    "module http2": [
+        "Http2ServerRequest new(options)",
+        "OutgoingHttpHeaders",
+        "performServerHandshake(socket)"
+    ],
+    "module https": [
+        "Server new(requestListener)",
+        "createServer(requestListener)",
+        "get returns",
+        "request returns"
+    ],
+    "module module": [],
+    "module net": [],
+    "module os": [
+        "arch returns",
+        "platform returns"
+    ],
+    "module path": [],
+    "module perf_hooks": [],
+    "module process": [
+        "channel",
+        "emit(sendHandle)",
+        "loadEnvFile(path)",
+        "mainModule",
+        "send(options)",
+        "send(sendHandle)"
+    ],
+    "module querystring": [],
+    "module readline": [
+        "promises"
+    ],
+    "module stream": [
+        "addAbortSignal(signal)",
+        "promises"
+    ],
+    "module stream/consumers": [
+        "arrayBuffer(stream)",
+        "blob(stream)",
+        "buffer(stream)",
+        "bytes(stream)",
+        "json(stream)",
+        "text(stream)"
+    ],
+    "module stream/promises": [
+        "pipeline returns",
+        "pipeline(options)"
+    ],
+    "module stream/web": [],
+    "module string_decoder": [],
+    "module timers": [
+        "promises"
+    ],
+    "module timers/promises": [],
+    "module tls": [
+        "TLSSocket new(socket)"
+    ],
+    "module trace_events": [],
+    "module tty": [
+        "ReadStream new(options)"
+    ],
+    "module url": [
+        "urlToHttpOptions returns"
+    ],
+    "module util": [
+        "aborted(signal)",
+        "convertProcessSignalToExitCode(signal)",
+        "transferableAbortController returns",
+        "transferableAbortSignal returns",
+        "transferableAbortSignal(signal)"
+    ],
+    "module v8": [
+        "getHeapSnapshot returns"
+    ],
+    "module vm": [],
+    "module wasi": [],
+    "module worker_threads": [
+        "moveMessagePortToContext(contextifiedSandbox)"
+    ],
+    "module zlib": []
+}
