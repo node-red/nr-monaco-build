@@ -118,7 +118,8 @@ function probeTypes({ probes, ...opts }) {
         const type = checker.getTypeAtLocation(decl.initializer);
         results.push({
             expr: probes[i],
-            type: checker.typeToString(type, undefined, ts.TypeFormatFlags.NoTruncation),
+            // Printed like the editor's hover text, relative to the user's code.
+            type: checker.typeToString(type, decl, ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope),
             any: !!(type.flags & ts.TypeFlags.Any),
             unresolved: isErrorType(type),
         });

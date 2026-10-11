@@ -5,6 +5,7 @@
  *   node test/run.js --update-baseline   rewrite test/baselines/*.json
  *   node test/run.js --output            also check the existing build in output/
  *   node test/run.js --node-red-sync     compare with node-red (see test/node-red-sync/)
+ *   node test/run.js --browser           load the built editor in Chromium (see test/browser/)
  */
 const { spawnSync } = require("child_process");
 const path = require("path");
@@ -19,6 +20,7 @@ if (args.includes("--output")) {
     files.push("test/build-output/*.test.js");
 }
 if (args.includes("--node-red-sync")) files.splice(0, files.length, "test/node-red-sync/*.test.js");
+if (args.includes("--browser")) files.splice(0, files.length, "test/browser/*.test.js");
 
 const result = spawnSync(process.execPath, ["--test", ...files], {
     cwd: path.join(__dirname, ".."),
