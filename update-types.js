@@ -25,7 +25,7 @@ if (MINIFY_DTS) {
     minifier = createMinifier(ts);// setup (provide a TS Compiler API object)
 }
 
-(function () {
+function updateTypes() {
     let nodeVer = NODE_VERSION_TO_INCLUDE || process.version
     if (nodeVer[0] === "v") { nodeVer = nodeVer.substring(1) }
 
@@ -45,7 +45,13 @@ if (MINIFY_DTS) {
     deleteFileOrDir(NODE_RED_LIB_DESTINATION);
     copyFiles(NODE_LIB_SOURCE, NODE_LIB_DESTINATION);
     copyFiles(NODE_RED_LIB_SOURCE, NODE_RED_LIB_DESTINATION);
-})();
+}
+
+if (require.main === module) {
+    updateTypes();
+}
+
+module.exports = { excludeLibs, copyFiles };
 
 
 function copyFiles(src, dst) {
