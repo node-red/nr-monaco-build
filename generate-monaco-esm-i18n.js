@@ -120,12 +120,89 @@ function injectSourcePath(monacoVersion, callback) {
                         }
                     }
                 });
+                try {
+                    exposeLanguageWorkers();
+                } catch (err) {
+                    callback(err);
+                    return;
+                }
                 callback();
             });
         });
     }).catch(err => {
         callback(err);
     })
+}
+
+/**
+ * Replace text in a file and fail the build unless it matched exactly `expected` times, so a monaco
+ * update that moves the code can't silently drop the patch.
+ */
+function patchExactly(file, from, to, expected = 1) {
+    // replace-in-file counts with String.match(), which only counts every match for a global regex
+    from = from.global ? from : new RegExp(from.source, from.flags + "g");
+    const [result] = replaceInFileSync({ files: file, from, to, countMatches: true });
+    const found = result ? result.numMatches : 0;
+    if (found !== expected) {
+        throw new Error(`nr-monaco-build: expected ${expected} match(es) of ${from} in ${file} but found ${found}. ` +
+            "monaco has changed, update exposeLanguageWorkers() in generate-monaco-esm-i18n.js");
+    }
+}
+
+/**
+ * Expose the CSS and HTML language workers, the same way monaco already does for JSON
+ * (`monaco.json.getWorker()`) and TypeScript (`monaco.typescript.getJavaScriptWorker()`), so editor
+ * code can use those language services for embedded content, e.g. a <style> block inside HTML:
+ *
+ *     monaco.css.getWorker(languageId = "css")    // "css", "scss" or "less"
+ *     monaco.html.getWorker(languageId = "html")  // "html", "handlebars", "razor" or an id passed to
+ *                                                  // monaco.html.registerHTMLLanguageService()
+ *
+ * Each resolves to `(...uris) => Promise<worker>`, like `monaco.json.getWorker()`, and rejects with
+ * "<languageId> not registered!" until that language has been used (its worker starts lazily).
+ * The worker methods (doComplete, doHover, doValidation, findDocumentColors, ...) are monaco's
+ * CSSWorker / HTMLWorker classes in esm/vs/languages/features/{css,html}/*Worker.js.
+ */
+function exposeLanguageWorkers() {
+    const registry = [
+        "",
+        "// Added by nr-monaco-build: expose the language workers, like monaco.json.getWorker()",
+        "const nrWorkers = new Map();",
+        "function nrRegisterWorker(languageId, worker, disposables) {",
+        "  nrWorkers.set(languageId, worker);",
+        "  disposables?.push({ dispose: () => { if (nrWorkers.get(languageId) === worker) { nrWorkers.delete(languageId); } } });",
+        "}",
+        "function getWorker(languageId) {",
+        "  return new Promise((resolve, reject) => {",
+        "    const worker = nrWorkers.get(languageId);",
+        "    if (!worker) {",
+        "      return reject(languageId + \" not registered!\");",
+        "    }",
+        "    resolve(worker);",
+        "  });",
+        "}",
+        ""
+    ].join("\n");
+    const featuresDir = path.join(monacoModEsmDir, "vs", "languages", "features");
+    // htmlMode.js has two setup functions (setupMode and the older setupMode1), cssMode.js has one
+    for (const [lang, setupCount] of [["css", 1], ["html", 2]]) {
+        const modeFile = path.join(featuresDir, lang, `${lang}Mode.js`);
+        // 1. remember each language's worker accessor when its mode is set up
+        patchExactly(modeFile,
+            /(\n[ \t]*const worker = \(\.\.\.uris\) => \{\s*return client\.getLanguageServiceWorker\(\.\.\.uris\);\s*\};)/g,
+            `$1\n  nrRegisterWorker(defaults.languageId, worker, typeof disposables === "undefined" ? void 0 : disposables);`,
+            setupCount);
+        // 2. add the registry and export getWorker
+        patchExactly(modeFile, /\nexport \{ ([^}]*) \};\s*$/, `\n${registry}\nexport { $1, getWorker };\n`);
+        // 3. public API: monaco.css.getWorker / monaco.html.getWorker
+        patchExactly(path.join(featuresDir, lang, "register.js"), /\nexport \{ ([^}]*) \};\s*$/,
+            `\nconst getWorker = (languageId = "${lang}") => getMode().then((mode2) => mode2.getWorker(languageId));\nexport { $1, getWorker };\n`);
+        // 4. older import path (esm/vs/language/<lang>/monaco.contribution.js) re-exports by name
+        const contribution = path.join(monacoModEsmDir, "vs", "language", lang, "monaco.contribution.js");
+        if (fs.existsSync(contribution)) {
+            patchExactly(contribution, /export \{ ([^}]*) \} from '([^']*\/register\.js)';/, "export { $1, getWorker } from '$2';");
+        }
+    }
 }
 
 
