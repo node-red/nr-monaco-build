@@ -4,12 +4,16 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
       node-red-ref:
         description: "node-red branch, tag or sha to compare node-red-types and the editor fixture with"
         required: false
         default: "master"
+
+permissions:
+  contents: read
 
 jobs:
   unit:
