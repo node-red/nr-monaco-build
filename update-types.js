@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/node-red/nr-monaco-build */\n\n`;
-const excludeLibs = ["base.d.ts", "constants.d.ts", "index.d.ts", "inspector.d.ts", "inspector.generated.d.ts", "punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
+const excludeLibs = ["constants.d.ts", "index.d.ts", "inspector.d.ts", "inspector.generated.d.ts", "punycode.d.ts", "repl.d.ts"];
 
 const { findClosestSemverMatch, deleteFileOrDir, mkDirSafe } = require("./common");
 
