@@ -3,6 +3,7 @@
  *
  *   node test/run.js                     unit suites against freshly copied types
  *   node test/run.js --update-baseline   rewrite test/baselines/*.json
+ *   node test/run.js --node-red-sync     compare with node-red (see test/node-red-sync/)
  */
 const { spawnSync } = require("child_process");
 const path = require("path");
@@ -12,6 +13,7 @@ const env = { ...process.env };
 const files = ["test/*.test.js"];
 
 if (args.includes("--update-baseline")) env.UPDATE_BASELINE = "1";
+if (args.includes("--node-red-sync")) files.splice(0, files.length, "test/node-red-sync/*.test.js");
 
 const result = spawnSync(process.execPath, ["--test", ...files], {
     cwd: path.join(__dirname, ".."),
