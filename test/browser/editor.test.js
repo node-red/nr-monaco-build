@@ -132,6 +132,73 @@ describe("built editor in a browser", () => {
         await page.close();
     });
 
+    it("exposes the css and html workers (monaco.css.getWorker, monaco.html.getWorker)", { timeout: 120000 }, async () => {
+        // a worker that fails to start makes its calls wait forever, so this test has its own timeout
+        // Added by generate-monaco-esm-i18n.js exposeLanguageWorkers(), the same shape as monaco.json.getWorker()
+        const { page, errors } = await openEditor();
+        const result = await page.evaluate(async () => {
+            const waitFor = async (fn, ms = 20000) => {
+                const end = Date.now() + ms;
+                while (Date.now() < end) {
+                    const v = await fn().catch(() => null);
+                    if (v) return v;
+                    await new Promise((r) => setTimeout(r, 100));
+                }
+                return null;
+            };
+            const api = { css: typeof monaco.css.getWorker, html: typeof monaco.html.getWorker };
+            // a language that hasn't been used yet has no worker
+            const unused = await monaco.css.getWorker("less").then(() => "resolved", (e) => String(e));
+
+            const css = monaco.editor.createModel("body { col }", "css");
+            const cssWorker = await waitFor(async () => (await monaco.css.getWorker())(css.uri));
+            const cssItems = (await cssWorker.doComplete(css.uri.toString(), { line: 0, character: 10 })).items.map((i) => i.label);
+            const colorModel = monaco.editor.createModel(".a { color: #ff0000; }", "css");
+            const colors = await (await (await monaco.css.getWorker())(colorModel.uri)).findDocumentColors(colorModel.uri.toString());
+
+            const scss = monaco.editor.createModel("$c: red;\n.a { color: $c; }", "scss");
+            const scssWorker = await waitFor(async () => (await monaco.css.getWorker("scss"))(scss.uri));
+            const scssHover = await scssWorker.doHover(scss.uri.toString(), { line: 1, character: 7 });
+
+            const html = monaco.editor.createModel("<di", "html");
+            const htmlWorker = await waitFor(async () => (await monaco.html.getWorker())(html.uri));
+            const htmlItems = (await htmlWorker.doComplete(html.uri.toString(), { line: 0, character: 3 })).items.map((i) => i.label);
+
+            // a language added with registerHTMLLanguageService gets its own worker too. Monaco asks
+            // MonacoEnvironment for a worker labelled with that language id, which only knows the built-in
+            // labels, so map it to the html worker (node-red's getWorkerUrl needs the same for such languages)
+            const env = self.MonacoEnvironment;
+            const getWorkerUrl = env.getWorkerUrl;
+            env.getWorkerUrl = (moduleId, label) => getWorkerUrl.call(env, moduleId, label === "nr-test-html" ? "html" : label);
+            monaco.languages.register({ id: "nr-test-html" });
+            monaco.html.registerHTMLLanguageService("nr-test-html");
+            const custom = monaco.editor.createModel("<sp", "nr-test-html");
+            const customWorker = await waitFor(async () => (await monaco.html.getWorker("nr-test-html"))(custom.uri));
+            const customItems = (await customWorker.doComplete(custom.uri.toString(), { line: 0, character: 3 })).items.map((i) => i.label);
+
+            return {
+                api,
+                unused,
+                cssCompletesColor: cssItems.includes("color"),
+                cssColors: colors.length,
+                scssHover: !!scssHover,
+                htmlCompletesDiv: htmlItems.includes("div"),
+                customCompletesSpan: customItems.includes("span"),
+            };
+        });
+        assert.deepEqual(result, {
+            api: { css: "function", html: "function" },
+            unused: "less not registered!",
+            cssCompletesColor: true,
+            cssColors: 1,
+            scssHover: true,
+            htmlCompletesDiv: true,
+            customCompletesSpan: true,
+        });
+        assert.deepEqual(errors, []);
+        await page.close();
+    });
+
     it("translates the UI for every locale", async () => {
         const label = async (lang) => {
             const { page, errors } = await openEditor(lang);
