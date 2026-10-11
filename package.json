@@ -18,6 +18,8 @@
         "pack-dev": "npx webpack --mode development",
         "demo": "npx http-server -p 8080 -c-1 -o demo.html",
         "generate-extraLibs": "node generate-extraLibs.js",
+        "test": "node test/run.js",
+        "test:update-baseline": "node test/run.js --update-baseline",
         "copyCheck1": "test -d output/monaco/dist",
         "copyCheck2": "test -d ../node-red/packages/node_modules/@node-red/editor-client/src",
         "copyPrep1": "rm -rf ../node-red/packages/node_modules/@node-red/editor-client/src/vendor/monaco/dist/*",
