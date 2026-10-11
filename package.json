@@ -20,6 +20,7 @@
         "generate-extraLibs": "node generate-extraLibs.js",
         "test": "node test/run.js",
         "test:update-baseline": "node test/run.js --update-baseline",
+        "test:build": "npm run clean && npm run build && node test/run.js --output",
         "test:node-red-sync": "node test/run.js --node-red-sync",
         "copyCheck1": "test -d output/monaco/dist",
         "copyCheck2": "test -d ../node-red/packages/node_modules/@node-red/editor-client/src",
