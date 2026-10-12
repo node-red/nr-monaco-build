@@ -39,6 +39,8 @@ Check + update node-red (function node/server-side) type defs
 * `./node-red-types/func.d.ts`
 * `./node-red-types/util.d.ts`
 
+Make type changes here first, or alongside the node-red PR that needs them. `npm run copy` puts them into node-red. If someone changed node-red's copies directly (`editor-client/src/types/node-red/`), bring that change back here before building, or the next copy undoes it. `npm run test:node-red-sync` shows any difference (see [Compare with node-red](#compare-with-node-red)).
+
 ### Step 3
 
 Install dependencies, clean and build
@@ -55,7 +57,37 @@ This will bundle the monaco editor with localization support and themes:
 cd output/monaco/dist/
 ```
 
-### Check it works
+### Check the build before copying it to node-red
+
+The output is vendored into node-red as is, so check it first. A build can succeed and still give node-red types that resolve to `any`, a worker that never loads or a locale that translates nothing, with nothing in the build log.
+
+```bash
+npm test               # the types, as node-red's Function node editor loads them (no build needed)
+npm run test:build     # clean + build, then everything again against output/, plus bundle, locale and theme checks
+npm run test:browser   # the built editor in headless Chromium (run `npx playwright install chromium` once)
+```
+
+`npm test` loads the types the way node-red's `monaco.js` does: one `.d.ts` per module, from the list in `test/fixtures/editor-modules.js`. It checks:
+
+* default globals like `Buffer.from()`, `NodeJS.TypedArray`, `node.send()` and `RED.util` resolve to real types, not `any`
+* every module in node-red's `knownModules` resolves when added on the Setup tab
+* the exclude list in `update-types.js` still matches real files, and nothing it excludes ships
+* types that already fail to resolve, and the list of shipped files, match `test/baselines/`
+
+If a bump changes which files node-red has to load (for example @types/node 24 moved `Buffer.from()` into `buffer.buffer.d.ts`), the tests fail on whatever turned into `any`. Update `knownModules`/`defaultServerSideTypes` in node-red's `monaco.js` in a node-red PR alongside this one, and make the same change in `test/fixtures/editor-modules.js`.
+
+When a bump changes a baseline on purpose, run `npm run test:update-baseline` and review the diff before committing it.
+
+#### Compare with node-red
+
+```bash
+NODE_RED_DIR=../node-red npm run test:node-red-sync   # a local checkout, on whatever branch it is on
+NODE_RED_REF=dev npm run test:node-red-sync           # or a branch/tag on GitHub (default master)
+```
+
+Compares `node-red-types/` with node-red's copies, to catch changes made directly in node-red that need bringing back here. Also compares `test/fixtures/editor-modules.js` with the `monaco.js` this build is going into. Differences are expected while the matching node-red PR is still open.
+
+#### Check it by eye
 
 Check editor works in browser...
 

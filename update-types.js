@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const note = `\n/* NOTE: Do not edit directly! This file is generated using \`npm run update-types\` in https://github.com/node-red/nr-monaco-build */\n\n`;
-const excludeLibs = ["base.d.ts", "constants.d.ts", "index.d.ts", "inspector.d.ts", "inspector.generated.d.ts", "punycode.d.ts", "globals.global.d.ts", "repl.d.ts"];
+const excludeLibs = ["constants.d.ts", "index.d.ts", "inspector.d.ts", "inspector.generated.d.ts", "punycode.d.ts", "repl.d.ts"];
 
 const { findClosestSemverMatch, deleteFileOrDir, mkDirSafe } = require("./common");
 
@@ -25,7 +25,7 @@ if (MINIFY_DTS) {
     minifier = createMinifier(ts);// setup (provide a TS Compiler API object)
 }
 
-(function () {
+function updateTypes() {
     let nodeVer = NODE_VERSION_TO_INCLUDE || process.version
     if (nodeVer[0] === "v") { nodeVer = nodeVer.substring(1) }
 
@@ -45,7 +45,13 @@ if (MINIFY_DTS) {
     deleteFileOrDir(NODE_RED_LIB_DESTINATION);
     copyFiles(NODE_LIB_SOURCE, NODE_LIB_DESTINATION);
     copyFiles(NODE_RED_LIB_SOURCE, NODE_RED_LIB_DESTINATION);
-})();
+}
+
+if (require.main === module) {
+    updateTypes();
+}
+
+module.exports = { excludeLibs, copyFiles };
 
 
 function copyFiles(src, dst) {
