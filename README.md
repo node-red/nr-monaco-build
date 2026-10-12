@@ -14,6 +14,7 @@ This project makes an ESM bundle of monaco-editor with 50 themes and localizatio
 
 ## Notes
 * A bug / issue I had to handle is: when changing mode, html worker would attempt to get links from document, but occasionally `document` would be `null` and an exception would be thrown. This has been handled by adding `if(!document) return []` at the top of `function findDocumentLinks(...)` in file `htmlLinks.js`
+* The build adds `monaco.css.getWorker(languageId)` and `monaco.html.getWorker(languageId)`, like monaco's own `monaco.json.getWorker()`, so the editor can use the CSS and HTML language services for embedded content (e.g. a `<style>` block in HTML). `languageId` defaults to `css` / `html`; `scss`, `less`, `handlebars`, `razor` and ids passed to `monaco.html.registerHTMLLanguageService()` work too. Each resolves to `(...uris) => Promise<worker>` once that language has been used. See `exposeLanguageWorkers()` in `generate-monaco-esm-i18n.js`; the build fails if monaco's code has moved and the patch no longer applies. A language added with `registerHTMLLanguageService()` asks `MonacoEnvironment.getWorkerUrl` for a worker labelled with its own id, so map that label to `html` there.
 
 ## Instructions
 
