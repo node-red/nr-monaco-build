@@ -16,16 +16,72 @@
     <ul>
         <li>Theme should be set to <code>forge-dark</code></li>
         <li>Intellisense for node globals, node-red utility functions should be present</li>
-        <li>Monaco lang should be german (right click inside the editor, check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd>) </li>
+        <li>Monaco lang defaults to spanish - use the dropdown below to change it (reloads the page), then check palette menu <kbd>F1</kbd> or <kbd>CTRL-SHIFT-P</kbd> </li>
+        <li>Additional language support should be present e.g. SQL</li>
+        <li>`monaco.version` should report the expected version</li>
     </ul>
+    <div>
+        <label for="lang-picker">Language: </label>
+        <select id="lang-picker"></select>
+    </div>
+    <!-- center editors -->
+    <div style="width: 80%; margin: auto;">
+        <div id="monaco-version">Monaco version: unknown</div>
+        <br>
+        <div id="monaco-editor" style="height: 250px; width: 100%;">JS Editor</div>
+        <br>
+        <div id="monaco-editor-html" style="height: 175px; width: 100%;">HTML Editor</div>
+        <br>
+        <div id="monaco-editor-css" style="height: 175px; width: 100%;">CSS Editor</div>
+        <br>
+        <div id="monaco-editor-json" style="height: 175px; width: 100%;">JSON Editor</div>
+        <br>
+        <div id="monaco-editor-sql" style="height: 175px; width: 100%;">SQL Editor</div>
+    </div>
 
-    <div id="monaco-editor" style="height: 500px;">MONACO</div>
-
-    <script src="./output/monaco/dist/locale/de.js"></script>
+    <script>
+        // Language is picked via ?lang=<code> and applied by reloading the page - see the
+        // dropdown below. "en" needs no locale script (it's the untranslated baseline).
+        var lang = new URLSearchParams(location.search).get("lang") || "es";
+        if (lang !== "en") {
+            document.write('<script src="./output/monaco/dist/locale/' + lang + '.js"><' + '/script>');
+        }
+    </script>
     <script src="./output/monaco/dist/editor.js"></script>
 
     <script>
+        let versionEl = document.getElementById("monaco-version");
+        if (versionEl) {
+            versionEl.textContent = "Monaco version: " + (monaco.version || "unknown");
+        }
+
+        // Populate the language picker and reload with the chosen language on change.
+        // Keep this list in sync with output/monaco/dist/locale/*.js.
+        const langNames = {
+            en: "English", cs: "Czech", de: "German", es: "Spanish", fr: "French",
+            it: "Italian", ja: "Japanese", ko: "Korean", pl: "Polish", "pt-br": "Portuguese (Brazil)",
+            ru: "Russian", tr: "Turkish", "zh-cn": "Chinese (Simplified)", "zh-tw": "Chinese (Traditional)"
+        };
+        const langPicker = document.getElementById("lang-picker");
+        Object.keys(langNames).forEach(code => {
+            const opt = document.createElement("option");
+            opt.value = code;
+            opt.textContent = `${code} - ${langNames[code]}`;
+            opt.selected = code === lang;
+            langPicker.appendChild(opt);
+        });
+        langPicker.addEventListener("change", () => {
+            // Always set lang explicitly (including "lang=en") so a no-param URL keeps
+            // defaulting to Spanish without being confused with an explicit English pick.
+            location.search = `lang=${langPicker.value}`;
+        });
+
         let editor;
+        let editorHtml;
+        let editorCss;
+        let editorJson;
+        let editorSql;
+
         (function () {
             const base = "./output/monaco/dist/";
             const types = "./output/types/";
@@ -45,17 +101,17 @@ node.warn("hello") // << should be recognised by editor
                 allowJs: true,
                 checkJs: true,
                 allowNonTsExtensions: true,
-                target: monaco.languages.typescript.ScriptTarget.ESNext,
+                target: monaco.typescript.ScriptTarget.ESNext,
                 strictNullChecks: false,
                 strictPropertyInitialization: true,
                 strictFunctionTypes: true,
                 strictBindCallApply: true,
-                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                moduleResolution: monaco.typescript.ModuleResolutionKind.NodeJs,
+                module: monaco.typescript.ModuleKind.CommonJS,
                 typeRoots: ["types"],
                 lib: ["esnext"] // don't load DOM by default,
             }
-            monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
+            monaco.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
 
             const diagnosticOptions = {
                 noSemanticValidation: false,
@@ -72,12 +128,29 @@ node.warn("hello") // << should be recognised by editor
                     80004, //JSDoc types may be moved to TypeScript types.
                 ]
             };
-            monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(diagnosticOptions);
+            monaco.typescript.javascriptDefaults.setDiagnosticsOptions(diagnosticOptions);
 
             editor = monaco.editor.create(document.getElementById("monaco-editor"), {
                 value: defCode,
                 language: "javascript"
             });
+            editorHtml = monaco.editor.create(document.getElementById("monaco-editor-html"), {
+                value: "<div>Hello</div>",
+                language: "html"
+            });
+            editorCss = monaco.editor.create(document.getElementById("monaco-editor-css"), {
+                value: "body { background: red; }",
+                language: "css"
+            });
+            editorJson = monaco.editor.create(document.getElementById("monaco-editor-json"), {
+                value: "{\n\t\"hello\": \"world\"\n}",
+                language: "json"
+            });
+            editorSql = monaco.editor.create(document.getElementById("monaco-editor-sql"), {
+                value: "SELECT * FROM users WHERE name = 'John'",
+                language: "sql"
+            });
+
             const themeName = "forge-dark"
             fetch(base + "theme/" + themeName + ".json").then(response => {
                 return response.json();
@@ -108,7 +181,7 @@ node.warn("hello") // << should be recognised by editor
                 for (let index = 0; index < results.length; index++) {
                     const ts = results[index];
                     const fn = urls[index].replace(types, "");
-                    monaco.languages.typescript.javascriptDefaults.addExtraLib(ts, `file://types/${fn}`);
+                    monaco.typescript.javascriptDefaults.addExtraLib(ts, `file://types/${fn}`);
                 }
             });
         })();
