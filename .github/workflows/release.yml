@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run test:build
+      # Same folders `npm run copy` puts into node-red's editor-client/src
+      - name: Package output
+        working-directory: output
+        run: zip -r "../nr-monaco-${{ github.event.release.tag_name }}.zip" monaco/dist types
+      - name: Attach to release
+        run: gh release upload "${{ github.event.release.tag_name }}" "nr-monaco-${{ github.event.release.tag_name }}.zip"
+        env:
+          GH_TOKEN: ${{ github.token }}
